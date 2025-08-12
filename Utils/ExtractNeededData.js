@@ -21,7 +21,7 @@ const extractNeededData = (product) => {
   if (product?.categoryTree && product?.categoryTree?.length > 0) {
     extractedData.category = product.categoryTree[0]?.name || 'Uncategorized';
   }
-  
+
   extractedData.reviews = {};
 
   if (product?.csv && product?.csv?.[RATING_CONSTANT] && product?.csv?.[RATING_CONSTANT]?.length > 0) {
