@@ -1,0 +1,38 @@
+// Indexes Of A CSV Dimentional Data From Keepa
+
+const AMAZON_PRICE_HISTORY_CONSTANT = 0;
+const BUYBOX_PRICE_HISTORY_CONSTANT = 18;
+const NEW_FBA_PRICE_HISTORY_CONSTANT = 10;
+const NEW_FBM_PRICE_HISTORY_CONSTANT = 7;
+const SALES_RANK_HISTORY_CONSTANT = 3;
+const RATING_CONSTANT = 16;
+const REVIEW_COUNT_CONSTANT = 17;
+
+//Amazon Product Image Base Url
+
+const AMAZON_IMAGE_BASE_URL = 'https://m.media-amazon.com/images/I/';
+
+// Query For Fetch Product Data From Keepa
+
+const QUERY_FOR_FETCH_PRODUCT_DATA = {
+  stats: 1,
+  buybox: 1,
+  stock: 1,
+  rating: 1,
+  days: 90,
+  history: 1,
+  //   offers: 20,
+  'only-live-offers': 1,
+};
+
+module.exports = {
+  AMAZON_PRICE_HISTORY_CONSTANT,
+  BUYBOX_PRICE_HISTORY_CONSTANT,
+  NEW_FBA_PRICE_HISTORY_CONSTANT,
+  NEW_FBM_PRICE_HISTORY_CONSTANT,
+  SALES_RANK_HISTORY_CONSTANT,
+  RATING_CONSTANT,
+  REVIEW_COUNT_CONSTANT,
+  AMAZON_IMAGE_BASE_URL,
+  QUERY_FOR_FETCH_PRODUCT_DATA,
+};
