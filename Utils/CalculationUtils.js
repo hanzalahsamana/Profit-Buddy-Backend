@@ -50,7 +50,7 @@ function keepaTimeMinutesToUnixTime(keepaMinutes) {
   return new Date(abc);
 }
 
-console.log('keepaTimeMinutesToUnixTime:', keepaTimeMinutesToUnixTime(7683452));
+console.log('keepaTimeMinutesToUnixTime:', keepaTimeMinutesToUnixTime(7685624));
 
 const liveOffersOrder = [1, 11, 8];
 function getOffersByIndex(offers, liveOffersOrder) {

@@ -1,36 +1,113 @@
-const { AMAZON_IMAGE_BASE_URL, RATING_CONSTANT, REVIEW_COUNT_CONSTANT } = require('../Enums/KeepaConstant');
+const {
+  AMAZON_IMAGE_BASE_URL,
+  RATING_CONSTANT,
+  REVIEW_COUNT_CONSTANT,
+  BUYBOX_PRICE_HISTORY_CONSTANT,
+  SALES_RANK_HISTORY_CONSTANT,
+  NEW_FBM_PRICE_HISTORY_CONSTANT,
+  NEW_FBA_PRICE_HISTORY_CONSTANT,
+  AMAZON_PRICE_HISTORY_CONSTANT,
+} = require('../Enums/KeepaConstant');
 
-// Extract Needed Data From Product
-const extractNeededData = (product) => {
-  let extractedData = {};
+const extractNeededDataFromProduct = (product) => {
+  if (!product) return {};
 
-  if (product?.images && product?.images?.length > 0) {
-    extractedData.images = product.images.map((img) => {
-      return `${AMAZON_IMAGE_BASE_URL}${img?.l || img?.m}`;
-    });
+  const extractedData = {};
+  const csv = product.csv || {};
+
+  // Images
+  if (product.images?.length) {
+    extractedData.images = product.images.map((img) => `${AMAZON_IMAGE_BASE_URL}${img?.l || img?.m}`);
   }
 
-  if (product?.title) {
-    extractedData.title = product.title;
-  }
-
-  if (product?.asin) {
-    extractedData.title = product.asin;
-  }
-
-  if (product?.categoryTree && product?.categoryTree?.length > 0) {
+  // Basic info
+  if (product.title) extractedData.title = product.title;
+  if (product.asin) extractedData.asin = product.asin;
+  if (product.categoryTree?.length) {
     extractedData.category = product.categoryTree[0]?.name || 'Uncategorized';
   }
 
-  extractedData.reviews = {};
-
-  if (product?.csv && product?.csv?.[RATING_CONSTANT] && product?.csv?.[RATING_CONSTANT]?.length > 0) {
-    extractedData.reviews?.rating = product.csv[RATING_CONSTANT]?.[product.csv[RATING_CONSTANT].length - 1] || 0;
+  // Reviews
+  const ratingHistory = csv[RATING_CONSTANT] || [];
+  const reviewCountHistory = csv[REVIEW_COUNT_CONSTANT] || [];
+  if (ratingHistory.length || reviewCountHistory.length) {
+    extractedData.reviews = {};
+    if (ratingHistory.length) extractedData.reviews.rating = ratingHistory.at(-1) || 0;
+    if (reviewCountHistory.length) extractedData.reviews.count = reviewCountHistory.at(-1) || 0;
   }
 
-  if (product?.csv && product?.csv?.[REVIEW_COUNT_CONSTANT] && product?.csv?.[REVIEW_COUNT_CONSTANT]?.length > 0) {
-    extractedData.reviews?.count = product.csv[REVIEW_COUNT_CONSTANT]?.[product.csv[REVIEW_COUNT_CONSTANT].length - 1] || 0;
+  // Info
+  const buyboxHistory = csv[BUYBOX_PRICE_HISTORY_CONSTANT] || [];
+  const salesRankHistory = csv[SALES_RANK_HISTORY_CONSTANT] || [];
+  if (buyboxHistory.length || salesRankHistory.length || product.monthlySold || product.competitivePriceThreshold) {
+    extractedData.info = {};
+    if (buyboxHistory.length) extractedData.info.sellPrice = buyboxHistory.at(-2) || 0;
+    if (salesRankHistory.length) extractedData.info.sellRank = salesRankHistory.at(-1) || 0;
+    if (product.monthlySold) extractedData.info.monthlySold = product.monthlySold;
+    if (product.competitivePriceThreshold) extractedData.info.competitivePriceThreshold = product.competitivePriceThreshold;
   }
+
+  // Fees
+  if (product.fbaFees?.pickAndPackFee || product.referralFeePercent) {
+    extractedData.fees = {};
+    if (product.fbaFees?.pickAndPackFee) extractedData.fees.fbaFees = product.fbaFees.pickAndPackFee;
+    if (product.referralFeePercent) extractedData.fees.referralFeePercent = product.referralFeePercent;
+  }
+
+  // Graph data
+  const graphKeys = {
+    buyboxHistory: BUYBOX_PRICE_HISTORY_CONSTANT,
+    amazonHistory: AMAZON_PRICE_HISTORY_CONSTANT,
+    fbaHistory: NEW_FBA_PRICE_HISTORY_CONSTANT,
+    fbmHistory: NEW_FBM_PRICE_HISTORY_CONSTANT,
+    salesRankHistory: SALES_RANK_HISTORY_CONSTANT,
+  };
+
+  for (const [key, constant] of Object.entries(graphKeys)) {
+    if (csv[constant]?.length) {
+      extractedData.graphData ??= {};
+      extractedData.graphData[key] = csv[constant];
+    }
+  }
+
+  return extractedData;
 };
 
-module.exports = { extractNeededData };
+const extractOffersFromProduct = (product) => {
+  if (!product?.liveOffersOrder?.length || !product?.offers?.length) return {};
+
+  const { liveOffersOrder, offers } = product;
+
+  const availableOffers = liveOffersOrder
+    .map((index) => offers[index])
+    .filter((offer) => offer?.condition === 1)
+    .map((offer) => {
+      const stock = offer.stockCSV?.length ? offer.stockCSV.at(-1) : false;
+      const price = offer.offerCSV?.length >= 2 ? offer.offerCSV.at(-2) : null;
+
+      let seller = offer.isAmazon ? 'AMZ' : offer.isFBA ? 'FBA' : 'FBM';
+
+      return {
+        stock,
+        price,
+        seller,
+        sellerId: offer.sellerId,
+        condition: offer.condition,
+      };
+    });
+
+  const totalOfferCount = availableOffers.length;
+  const amazonOfferCount = availableOffers.filter((o) => o.seller === 'AMZ').length;
+  const fbaOfferCount = availableOffers.filter((o) => o.seller === 'FBA').length;
+  const fbmOfferCount = availableOffers.filter((o) => o.seller === 'FBM').length;
+
+  return {
+    totalOfferCount,
+    amazonOfferCount,
+    fbaOfferCount,
+    fbmOfferCount,
+    offers: availableOffers,
+  };
+};
+
+module.exports = { extractNeededDataFromProduct, extractOffersFromProduct };

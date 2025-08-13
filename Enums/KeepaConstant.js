@@ -15,14 +15,14 @@ const AMAZON_IMAGE_BASE_URL = 'https://m.media-amazon.com/images/I/';
 // Query For Fetch Product Data From Keepa
 
 const QUERY_FOR_FETCH_PRODUCT_DATA = {
-  stats: 1,
   buybox: 1,
-  stock: 1,
   rating: 1,
   days: 90,
   history: 1,
-  //   offers: 20,
-  'only-live-offers': 1,
+  // stats: 1,
+  // stock: 1,
+  // offers: 20,
+  // 'only-live-offers': 1,
 };
 
 module.exports = {
