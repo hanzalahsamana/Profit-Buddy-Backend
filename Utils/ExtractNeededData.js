@@ -32,7 +32,7 @@ const extractNeededDataFromProduct = (product) => {
   const reviewCountHistory = csv[REVIEW_COUNT_CONSTANT] || [];
   if (ratingHistory.length || reviewCountHistory.length) {
     extractedData.reviews = {};
-    if (ratingHistory.length) extractedData.reviews.rating = ratingHistory.at(-1) || 0;
+    if (ratingHistory.length) extractedData.reviews.rating = ratingHistory.at(-1)/10 || 0;
     if (reviewCountHistory.length) extractedData.reviews.count = reviewCountHistory.at(-1) || 0;
   }
 
@@ -41,17 +41,17 @@ const extractNeededDataFromProduct = (product) => {
   const salesRankHistory = csv[SALES_RANK_HISTORY_CONSTANT] || [];
   if (buyboxHistory.length || salesRankHistory.length || product.monthlySold || product.competitivePriceThreshold) {
     extractedData.info = {};
-    if (buyboxHistory.length) extractedData.info.sellPrice = buyboxHistory.at(-2) || 0;
+    if (buyboxHistory.length) extractedData.info.sellPrice = buyboxHistory.at(-2)/100 || 0;
     if (salesRankHistory.length) extractedData.info.sellRank = salesRankHistory.at(-1) || 0;
     if (product.monthlySold) extractedData.info.monthlySold = product.monthlySold;
-    if (product.competitivePriceThreshold) extractedData.info.competitivePriceThreshold = product.competitivePriceThreshold;
+    if (product.competitivePriceThreshold) extractedData.info.competitivePriceThreshold = product.competitivePriceThreshold/100;
   }
 
   // Fees
   if (product.fbaFees?.pickAndPackFee || product.referralFeePercent) {
     extractedData.fees = {};
-    if (product.fbaFees?.pickAndPackFee) extractedData.fees.fbaFees = product.fbaFees.pickAndPackFee;
-    if (product.referralFeePercent) extractedData.fees.referralFeePercent = product.referralFeePercent;
+    if (product.fbaFees?.pickAndPackFee) extractedData.fees.fbaFees = product.fbaFees.pickAndPackFee/100;
+    if (product.referralFeePercent) extractedData.fees.referralFeePercent = product.referralFeePercent/100;
   }
 
   // Graph data
@@ -83,7 +83,7 @@ const extractOffersFromProduct = (product) => {
     .filter((offer) => offer?.condition === 1)
     .map((offer) => {
       const stock = offer.stockCSV?.length ? offer.stockCSV.at(-1) : false;
-      const price = offer.offerCSV?.length >= 2 ? offer.offerCSV.at(-2) : null;
+      const price = offer.offerCSV?.length >= 2 ? offer.offerCSV.at(-2)/100 : null;
 
       let seller = offer.isAmazon ? 'AMZ' : offer.isFBA ? 'FBA' : 'FBM';
 
