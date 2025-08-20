@@ -7,8 +7,9 @@ const {
   NEW_FBM_PRICE_HISTORY_CONSTANT,
   NEW_FBA_PRICE_HISTORY_CONSTANT,
   AMAZON_PRICE_HISTORY_CONSTANT,
+  NEW_PRICE_HISTORY_CONSTANT,
 } = require('../Enums/KeepaConstant');
-const { gramsToPounds } = require('./Converter');
+const { gramsToPounds, keepaToFlatGraphData } = require('./Converter');
 
 const extractNeededDataFromProduct = (product) => {
   if (!product) return {};
@@ -60,17 +61,22 @@ const extractNeededDataFromProduct = (product) => {
   const graphKeys = {
     buyboxHistory: BUYBOX_PRICE_HISTORY_CONSTANT,
     amazonHistory: AMAZON_PRICE_HISTORY_CONSTANT,
-    fbaHistory: NEW_FBA_PRICE_HISTORY_CONSTANT,
-    fbmHistory: NEW_FBM_PRICE_HISTORY_CONSTANT,
+    // fbaHistory: NEW_FBA_PRICE_HISTORY_CONSTANT,
+    // fbmHistory: NEW_FBM_PRICE_HISTORY_CONSTANT,
     salesRankHistory: SALES_RANK_HISTORY_CONSTANT,
+    newHistory: NEW_PRICE_HISTORY_CONSTANT,
   };
+
+  let csvGraphData = {};
 
   for (const [key, constant] of Object.entries(graphKeys)) {
     if (csv[constant]?.length) {
-      extractedData.graphData ??= {};
-      extractedData.graphData[key] = csv[constant];
+      csvGraphData ??= {};
+      csvGraphData[key] = csv[constant];
     }
   }
+
+  extractedData.graphData = keepaToFlatGraphData(csvGraphData);
 
   return extractedData;
 };
