@@ -8,14 +8,16 @@ const {
   NEW_FBA_PRICE_HISTORY_CONSTANT,
   AMAZON_PRICE_HISTORY_CONSTANT,
   NEW_PRICE_HISTORY_CONSTANT,
+  OFFER_COUNT_HISTORY_CONSTANT,
 } = require('../Enums/KeepaConstant');
-const { gramsToPounds, keepaToFlatGraphData } = require('./Converter');
+const { gramsToPounds } = require('./Converter');
+const { buildFlatGraphData, extractGraphData, priceTransform, rankTransform } = require('./GraphCsvUtils');
 
 const extractNeededDataFromProduct = (product) => {
   if (!product) return {};
 
   const extractedData = {};
-  const csv = product.csv || {};
+  const csv = product.csv || [];
 
   // Images
   if (product.images?.length) {
@@ -58,25 +60,37 @@ const extractNeededDataFromProduct = (product) => {
   }
 
   // Graph data
-  const graphKeys = {
-    buyboxHistory: BUYBOX_PRICE_HISTORY_CONSTANT,
-    amazonHistory: AMAZON_PRICE_HISTORY_CONSTANT,
-    // fbaHistory: NEW_FBA_PRICE_HISTORY_CONSTANT,
-    // fbmHistory: NEW_FBM_PRICE_HISTORY_CONSTANT,
-    salesRankHistory: SALES_RANK_HISTORY_CONSTANT,
-    newHistory: NEW_PRICE_HISTORY_CONSTANT,
-  };
+  if (csv?.length) {
+    extractedData.graphData = {};
 
-  let csvGraphData = {};
+    const graphConfigs = {
+      salesGraph: {
+        keys: {
+          buyboxHistory: BUYBOX_PRICE_HISTORY_CONSTANT,
+          amazonHistory: AMAZON_PRICE_HISTORY_CONSTANT,
+          salesRankHistory: SALES_RANK_HISTORY_CONSTANT,
+          newHistory: NEW_PRICE_HISTORY_CONSTANT,
+        },
+        series: [
+          { key: 'buyBox', source: 'buyboxHistory', step: 3, transform: priceTransform },
+          { key: 'amazon', source: 'amazonHistory', step: 2, transform: priceTransform },
+          { key: 'salesRank', source: 'salesRankHistory', step: 2, transform: rankTransform },
+          { key: 'new', source: 'newHistory', step: 2, transform: priceTransform },
+        ],
+      },
+      offerGraph: {
+        keys: {
+          offerCountHistory: OFFER_COUNT_HISTORY_CONSTANT,
+        },
+        series: [{ key: 'offerCount', source: 'offerCountHistory', step: 2, transform: rankTransform }],
+      },
+    };
 
-  for (const [key, constant] of Object.entries(graphKeys)) {
-    if (csv[constant]?.length) {
-      csvGraphData ??= {};
-      csvGraphData[key] = csv[constant];
+    for (const [graphName, config] of Object.entries(graphConfigs)) {
+      const graphRawData = extractGraphData(csv, config);
+      extractedData.graphData[graphName] = buildFlatGraphData(graphRawData, config.series);
     }
   }
-
-  extractedData.graphData = keepaToFlatGraphData(csvGraphData);
 
   return extractedData;
 };
