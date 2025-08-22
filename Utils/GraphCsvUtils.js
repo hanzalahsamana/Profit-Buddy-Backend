@@ -112,6 +112,10 @@ const buildFlatGraphData = (graphData, seriesConfigs, opts = {}) => {
   }
 
   result = result.filter((entry) => Object.keys(seriesMaps).some((k) => entry[k] !== null));
+  
+  if (result.length === 1) {
+    result.push({ ...result[0] });
+  }
 
   return result;
 };

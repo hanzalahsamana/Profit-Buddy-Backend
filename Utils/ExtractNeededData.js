@@ -49,7 +49,15 @@ const extractNeededDataFromProduct = (product) => {
     if (salesRankHistory.length) extractedData.info.sellRank = salesRankHistory.at(-1) || 0;
     if (product.monthlySold) extractedData.info.monthlySold = product.monthlySold;
     if (product.competitivePriceThreshold) extractedData.info.competitivePriceThreshold = product.competitivePriceThreshold / 100;
-    if (product.packageWeight ?? product.itemWeight) extractedData.info.weight = gramsToPounds(product.packageWeight ?? product.itemWeight);
+  }
+
+  // Dimension
+  if (product.packageWidth || product.packageLength || product.packageHeight || product.packageWeight) {
+    extractedData.dimension = {};
+    if (product.packageWidth) extractedData.dimension.width = product.packageWidth;
+    if (product.packageLength) extractedData.dimension.length = product.packageLength;
+    if (product.packageHeight) extractedData.dimension.height = product.packageHeight;
+    if (product.packageWeight) extractedData.dimension.weight = product.packageWeight;
   }
 
   // Fees
@@ -57,6 +65,7 @@ const extractNeededDataFromProduct = (product) => {
     extractedData.fees = {};
     if (product.fbaFees?.pickAndPackFee) extractedData.fees.fbaFees = product.fbaFees.pickAndPackFee / 100;
     if (product.referralFeePercent) extractedData.fees.referralFeePercent = product.referralFeePercent / 100;
+    if (product.packageWeight ?? product.itemWeight) extractedData.fees.inboundShippingFee = gramsToPounds(product.packageWeight ?? product.itemWeight);
   }
 
   // Graph data
@@ -69,13 +78,13 @@ const extractNeededDataFromProduct = (product) => {
           buyboxHistory: BUYBOX_PRICE_HISTORY_CONSTANT,
           amazonHistory: AMAZON_PRICE_HISTORY_CONSTANT,
           salesRankHistory: SALES_RANK_HISTORY_CONSTANT,
-          newHistory: NEW_PRICE_HISTORY_CONSTANT,
+          newPriceHistory: NEW_PRICE_HISTORY_CONSTANT,
         },
         series: [
           { key: 'buyBox', source: 'buyboxHistory', step: 3, transform: priceTransform },
           { key: 'amazon', source: 'amazonHistory', step: 2, transform: priceTransform },
           { key: 'salesRank', source: 'salesRankHistory', step: 2, transform: rankTransform },
-          { key: 'new', source: 'newHistory', step: 2, transform: priceTransform },
+          { key: 'newPrice', source: 'newPriceHistory', step: 2, transform: priceTransform },
         ],
       },
       offerGraph: {
