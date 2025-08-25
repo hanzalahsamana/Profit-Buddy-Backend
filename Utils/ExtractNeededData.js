@@ -10,8 +10,9 @@ const {
   NEW_PRICE_HISTORY_CONSTANT,
   OFFER_COUNT_HISTORY_CONSTANT,
 } = require('../Enums/KeepaConstant');
-const { gramsToPounds } = require('./Converter');
+const { gramsToPounds, gramsToOunce, mmToInch, mmToCm } = require('./Converter');
 const { buildFlatGraphData, extractGraphData, priceTransform, rankTransform } = require('./GraphCsvUtils');
+const { getFBAInboundPlacementFees } = require('./PlacementFeeCalc');
 
 const extractNeededDataFromProduct = (product) => {
   if (!product) return {};
@@ -54,19 +55,23 @@ const extractNeededDataFromProduct = (product) => {
   // Dimension
   if (product.packageWidth || product.packageLength || product.packageHeight || product.packageWeight) {
     extractedData.dimension = {};
-    if (product.packageWidth) extractedData.dimension.width = product.packageWidth;
-    if (product.packageLength) extractedData.dimension.length = product.packageLength;
-    if (product.packageHeight) extractedData.dimension.height = product.packageHeight;
-    if (product.packageWeight) extractedData.dimension.weight = product.packageWeight;
+    if (product.packageWidth) extractedData.dimension.width = `${mmToCm(product.packageWidth).toFixed(2)} cm (${mmToInch(product.packageWidth).toFixed(2)} in)`;
+    if (product.packageLength) extractedData.dimension.length = `${mmToCm(product.packageLength).toFixed(2)} cm (${mmToInch(product.packageLength).toFixed(2)} in)`;
+    if (product.packageHeight) extractedData.dimension.height = `${mmToCm(product.packageHeight).toFixed(2)} cm (${mmToInch(product.packageHeight).toFixed(2)} in)`;
+    if (product.packageWeight) extractedData.dimension.weight = `${gramsToOunce(product.packageWeight).toFixed(2)} oz`;
   }
 
   // Fees
-  if (product.fbaFees?.pickAndPackFee || product.referralFeePercent) {
-    extractedData.fees = {};
-    if (product.fbaFees?.pickAndPackFee) extractedData.fees.fbaFees = product.fbaFees.pickAndPackFee / 100;
-    if (product.referralFeePercent) extractedData.fees.referralFeePercent = product.referralFeePercent / 100;
-    if (product.packageWeight ?? product.itemWeight) extractedData.fees.inboundShippingFee = gramsToPounds(product.packageWeight ?? product.itemWeight);
-  }
+  extractedData.fees = {};
+  if (product.fbaFees?.pickAndPackFee) extractedData.fees.fbaFees = product.fbaFees.pickAndPackFee / 100;
+  if (product.referralFeePercent) extractedData.fees.referralFeePercent = product.referralFeePercent / 100;
+  if (product.packageWeight ?? product.itemWeight) extractedData.fees.inboundShippingFee = gramsToPounds(product.packageWeight ?? product.itemWeight);
+  extractedData.fees.inboundPlacementFee = getFBAInboundPlacementFees(
+    mmToInch(product.packageWidth),
+    mmToInch(product.packageLength),
+    mmToInch(product.packageHeight),
+    gramsToOunce(product.packageWeight)
+  );
 
   // Graph data
   if (csv?.length) {
