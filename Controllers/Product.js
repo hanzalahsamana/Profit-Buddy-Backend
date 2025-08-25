@@ -1,6 +1,6 @@
 const { QUERY_FOR_FETCH_PRODUCT_DATA } = require('../Enums/KeepaConstant');
-const { searchProductsFromKeepa, getProductsFromKeepa, getOffersOfProductFromKeepa, getGraphImageFromKeepa } = require('../Services/Keepa.service');
-const { extractNeededDataFromProduct, extractOffersFromProduct } = require('../Utils/ExtractNeededData');
+const { searchProductsFromKeepa, getProductsFromKeepa, getOffersOfProductFromKeepa, getGraphImageFromKeepa, getSellerInfoFromKeepa } = require('../Services/Keepa.service');
+const { extractNeededDataFromProduct, extractOffersFromProduct, enrichOffersWithSeller } = require('../Utils/ExtractNeededData');
 
 const searchProducts = async (req, res) => {
   try {
@@ -50,7 +50,14 @@ const getOffersOfProduct = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Oops, This product has no offers.' });
     }
 
-    return res.status(200).json({ success: true, asin: asin, offer: finalizedOffer });
+    const sellerIds = [...new Set(finalizedOffer.offers.map((o) => o.sellerId))];
+    const sellerIdParam = sellerIds.join(',');
+
+    const sellerInfo = await getSellerInfoFromKeepa(sellerIdParam);
+
+    const enrichedOffers = enrichOffersWithSeller(finalizedOffer, sellerInfo);
+
+    return res.status(200).json({ success: true, asin: asin, offer: enrichedOffers });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

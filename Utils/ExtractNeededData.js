@@ -28,9 +28,8 @@ const extractNeededDataFromProduct = (product) => {
   // Basic info
   if (product.title) extractedData.title = product.title;
   if (product.asin) extractedData.asin = product.asin;
-  if (product.categoryTree?.length) {
-    extractedData.category = product.categoryTree[0]?.name || 'Uncategorized';
-  }
+  if (product.categoryTree?.length) extractedData.category = product.categoryTree[0]?.name || 'Uncategorized';
+  if (product.buyBoxSellerIdHistory?.length) extractedData.sellerId = product?.buyBoxSellerIdHistory?.at(-1);
 
   // Reviews
   const ratingHistory = csv[RATING_CONSTANT] || [];
@@ -146,4 +145,25 @@ const extractOffersFromProduct = (product) => {
   };
 };
 
-module.exports = { extractNeededDataFromProduct, extractOffersFromProduct };
+const enrichOffersWithSeller = (offerData, sellers) => {
+  console.log(sellers , offerData);
+  const enrichedOffers = offerData?.offers?.map((offer) => {
+    const seller = sellers?.[offer.sellerId];
+
+    return {
+      ...offer,
+      sellerInfo: seller
+        ? {
+            name: seller?.sellerName,
+            ratingCount: seller?.currentRatingCount,
+            rating: seller?.currentRating ? (seller?.currentRating / 100) * 5 : 0,
+            id: offer?.sellerId,
+          }
+        : null,
+    };
+  });
+
+  return { ...offerData, offers: enrichedOffers };
+};
+
+module.exports = { extractNeededDataFromProduct, extractOffersFromProduct, enrichOffersWithSeller };

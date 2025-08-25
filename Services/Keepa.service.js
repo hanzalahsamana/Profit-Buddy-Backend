@@ -99,4 +99,26 @@ const getGraphImageFromKeepa = (asin, res) => {
     });
 };
 
-module.exports = { searchProductsFromKeepa, getProductsFromKeepa, getOffersOfProductFromKeepa, getGraphImageFromKeepa };
+const getSellerInfoFromKeepa = async (sellerId, querry = {}) => {
+  try {
+    const params = new URLSearchParams({
+      key: keepa.apiKey,
+      domain: keepa.amazonDomain,
+      seller: sellerId,
+      ...querry,
+    });
+
+    const { data } = await httpClient.get(`${keepa.baseURL}/seller?${params.toString()}`);
+
+    if (data.error && data.error.length > 0) {
+      throw new Error(`Keepa API Error: ${data.error.join(', ')}`);
+    }
+
+    return data?.sellers;
+  } catch (error) {
+    console.error('Keepa API request failed:', error);
+    throw new Error('Unable to fetch seller info from Keepa at the moment.');
+  }
+};
+
+module.exports = { searchProductsFromKeepa, getProductsFromKeepa, getOffersOfProductFromKeepa, getGraphImageFromKeepa , getSellerInfoFromKeepa };
