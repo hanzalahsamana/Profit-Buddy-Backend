@@ -27,6 +27,13 @@ const QUERY_FOR_FETCH_PRODUCT_DATA = {
   // 'only-live-offers': 1,
 };
 
+// Query For Fetch Offer Data From Keepa
+const QUERY_FOR_FETCH_OFFER_DATA = {
+  offers: 20,
+  'only-live-offers': 1,
+  stock: 1,
+};
+
 module.exports = {
   AMAZON_PRICE_HISTORY_CONSTANT,
   BUYBOX_PRICE_HISTORY_CONSTANT,
@@ -39,5 +46,6 @@ module.exports = {
   AMAZON_IMAGE_BASE_URL,
   QUERY_FOR_FETCH_PRODUCT_DATA,
   OFFER_COUNT_HISTORY_CONSTANT,
-  KEEPA_EPOCH_START_MINUTES
+  KEEPA_EPOCH_START_MINUTES,
+  QUERY_FOR_FETCH_OFFER_DATA,
 };

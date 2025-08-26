@@ -145,8 +145,52 @@ const extractOffersFromProduct = (product) => {
   };
 };
 
+const extractNeededDataFromSeller = (seller) => {
+  if (!seller) return {};
+
+  const extractedData = {};
+
+  // Basic info
+  if (seller.sellerName) extractedData.name = seller.sellerName;
+  if (seller.sellerId) extractedData.id = seller.sellerId;
+  extractedData.shipsFrom = seller.shipsFromChina ? 'China' : 'Local Warehouse';
+
+  if (Array.isArray(seller.totalStorefrontAsins)) {
+    extractedData.totalAsins = seller.totalStorefrontAsins.at(-1) || 0;
+  }
+
+  // Ratings
+  if (seller.currentRating || seller.currentRatingCount) {
+    extractedData.rating = ((seller.currentRating || 0) / 100) * 5;
+    extractedData.ratingCount = seller.currentRatingCount || 0;
+  }
+
+  // Scammer
+  extractedData.scammer = !!seller.isScammer;
+
+  // Phone
+  if (seller?.phoneNumber) extractedData.phone = seller.phoneNumber;
+
+  // Brands
+  if (seller?.sellerBrandStatistics?.length) {
+    extractedData.brands = seller.sellerBrandStatistics.map((b) => ({
+      name: b.brand,
+      count: b.productCount,
+    }));
+  }
+
+  // Categories
+  if (seller?.sellerCategoryStatistics?.length) {
+    extractedData.categories = seller.sellerCategoryStatistics.map((c) => ({
+      id: c.catId,
+      count: c.productCount,
+    }));
+  }
+
+  return extractedData;
+};
+
 const enrichOffersWithSeller = (offerData, sellers) => {
-  console.log(sellers , offerData);
   const enrichedOffers = offerData?.offers?.map((offer) => {
     const seller = sellers?.[offer.sellerId];
 
@@ -166,4 +210,17 @@ const enrichOffersWithSeller = (offerData, sellers) => {
   return { ...offerData, offers: enrichedOffers };
 };
 
-module.exports = { extractNeededDataFromProduct, extractOffersFromProduct, enrichOffersWithSeller };
+const enrichSellersWithCategoryName = (sellerData, categories) => {
+  const enrichedCategories = sellerData?.categories?.map((category) => {
+    const { name, catId } = categories?.[category.id] || {};
+
+    return {
+      ...category,
+      name: name,
+    };
+  });
+
+  return { ...sellerData, categories: enrichedCategories };
+};
+
+module.exports = { extractNeededDataFromProduct, extractOffersFromProduct, enrichOffersWithSeller, extractNeededDataFromSeller, enrichSellersWithCategoryName };

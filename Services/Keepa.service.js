@@ -26,13 +26,13 @@ const searchProductsFromKeepa = async (searchTerm, page = 0) => {
   }
 };
 
-const getProductsFromKeepa = async (asins = [], moreQuery = {}) => {
+const getProductsFromKeepa = async (asin = '', query = {}) => {
   try {
     const params = new URLSearchParams({
       key: keepa.apiKey,
       domain: keepa.amazonDomain,
-      asin: asins.join(','),
-      ...moreQuery,
+      asin: asin,
+      ...query,
     });
 
     const { data } = await httpClient.get(`${keepa.baseURL}/product?${params.toString()}`);
@@ -45,30 +45,6 @@ const getProductsFromKeepa = async (asins = [], moreQuery = {}) => {
   } catch (error) {
     console.error('Keepa API request failed:', error);
     throw new Error('Unable to fetch products from Keepa at the moment. Please try again later.');
-  }
-};
-
-const getOffersOfProductFromKeepa = async (asin = '') => {
-  try {
-    const params = new URLSearchParams({
-      key: keepa.apiKey,
-      domain: keepa.amazonDomain,
-      asin: asin,
-      offers: 20,
-      'only-live-offers': 1,
-      stock: 1,
-    });
-
-    const { data } = await httpClient.get(`${keepa.baseURL}/product?${params.toString()}`);
-
-    if (data.error && data.error.length > 0) {
-      throw new Error(`Keepa API Error: ${data.error.join(', ')}`);
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Keepa API request failed:', error);
-    throw new Error('Unable to fetch offers from Keepa at the moment.');
   }
 };
 
@@ -99,13 +75,13 @@ const getGraphImageFromKeepa = (asin, res) => {
     });
 };
 
-const getSellerInfoFromKeepa = async (sellerId, querry = {}) => {
+const getSellerInfoFromKeepa = async (sellerId, query = {}) => {
   try {
     const params = new URLSearchParams({
       key: keepa.apiKey,
       domain: keepa.amazonDomain,
       seller: sellerId,
-      ...querry,
+      ...query,
     });
 
     const { data } = await httpClient.get(`${keepa.baseURL}/seller?${params.toString()}`);
@@ -121,4 +97,55 @@ const getSellerInfoFromKeepa = async (sellerId, querry = {}) => {
   }
 };
 
-module.exports = { searchProductsFromKeepa, getProductsFromKeepa, getOffersOfProductFromKeepa, getGraphImageFromKeepa , getSellerInfoFromKeepa };
+const getCategoryInfoFromKeepa = async (categoryId, query = {}) => {
+  try {
+    const params = new URLSearchParams({
+      key: keepa.apiKey,
+      domain: keepa.amazonDomain,
+      category: categoryId,
+      ...query,
+    });
+
+    const { data } = await httpClient.get(`${keepa.baseURL}/category?${params.toString()}`);
+
+    if (data.error && data.error.length > 0) {
+      throw new Error(`Keepa API Error: ${data.error.join(', ')}`);
+    }
+
+    return data?.categories;
+  } catch (error) {
+    console.error('Keepa API request failed:', error);
+    throw new Error('Unable to fetch category info from Keepa at the moment.');
+  }
+};
+
+const findProductsAsinsFromKeepa = async (query) => {
+  if (!query || !Object.keys(query).length) return;
+
+  try {
+    const params = new URLSearchParams({
+      key: keepa.apiKey,
+      domain: keepa.amazonDomain,
+    });
+
+    const { data } = await httpClient.post(`${keepa.baseURL}/query?${params.toString()}`, query);
+
+    if (data.error && data.error.length > 0) {
+      throw new Error(`Keepa API Error: ${data.error.join(', ')}`);
+    }
+
+    return data?.asinList;
+  } catch (error) {
+    console.error('Keepa API request failed:', error);
+    throw new Error('Unable to fetch products asin from Keepa at the moment.');
+  }
+};
+
+module.exports = {
+  searchProductsFromKeepa,
+  getProductsFromKeepa,
+  getGraphImageFromKeepa,
+  getSellerInfoFromKeepa,
+  findProductsAsinsFromKeepa,
+  getCategoryInfoFromKeepa,
+};

@@ -1,6 +1,30 @@
 const { QUERY_FOR_FETCH_PRODUCT_DATA } = require('../Enums/KeepaConstant');
-const { searchProductsFromKeepa, getProductsFromKeepa, getOffersOfProductFromKeepa, getGraphImageFromKeepa, getSellerInfoFromKeepa } = require('../Services/Keepa.service');
-const { extractNeededDataFromProduct, extractOffersFromProduct, enrichOffersWithSeller } = require('../Utils/ExtractNeededData');
+const { searchProductsFromKeepa, getProductsFromKeepa, findProductsAsinsFromKeepa } = require('../Services/Keepa.service');
+const { extractNeededDataFromProduct } = require('../Utils/ExtractNeededData');
+
+const getProducts = async (req, res) => {
+  try {
+    const { asin } = req.query;
+
+    if (!asin) {
+      return res.status(400).json({ success: false, message: 'Asin is required' });
+    }
+
+    const fetchedResult = await getProductsFromKeepa(asin, QUERY_FOR_FETCH_PRODUCT_DATA);
+
+    if (!fetchedResult?.products || !fetchedResult?.products.length === 0) {
+      return res.status(400).json({ success: false, message: 'Oops, No products matching with that asin.' });
+    }
+
+    const finalResult = fetchedResult?.products?.map((product) => {
+      return extractNeededDataFromProduct(product);
+    });
+
+    return res.status(200).json({ success: true, products: finalResult });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 const searchProducts = async (req, res) => {
   try {
@@ -15,13 +39,14 @@ const searchProducts = async (req, res) => {
     if (!searchedResult?.asinList || !searchedResult?.asinList.length === 0) {
       return res.status(400).json({ success: false, message: 'Oops, No products matching with that search.' });
     }
-    const fetchedResult = await getProductsFromKeepa(searchedResult?.asinList, QUERY_FOR_FETCH_PRODUCT_DATA);
+
+    const fetchedResult = await getProductsFromKeepa(searchedResult?.asinList?.join(','), QUERY_FOR_FETCH_PRODUCT_DATA);
 
     if (!fetchedResult?.products || !fetchedResult?.products.length === 0) {
       return res.status(400).json({ success: false, message: 'Oops, No products matching with that search.' });
     }
 
-    const finalResult = fetchedResult?.products?.map((product, index) => {
+    const finalResult = fetchedResult?.products?.map((product) => {
       return extractNeededDataFromProduct(product);
     });
 
@@ -31,44 +56,24 @@ const searchProducts = async (req, res) => {
   }
 };
 
-const getOffersOfProduct = async (req, res) => {
+const findProductAsins = async (req, res) => {
   try {
-    const { asin } = req.query;
-    if (!asin) {
-      return res.status(400).json({ success: false, message: 'Asin is required' });
+    const querry = req?.query;
+
+    if (!querry || !Object.keys(querry).length) {
+      return res.status(400).json({ success: false, message: 'Search query is required' });
     }
 
-    const offersResult = await getOffersOfProductFromKeepa(asin);
+    const asinList = await findProductsAsinsFromKeepa(querry);
 
-    if (!offersResult?.products || !offersResult?.products?.length === 0 || offersResult?.products[0]?.offers?.length === 0) {
-      return res.status(400).json({ success: false, message: 'Oops, This product has no offers.' });
+    if (!asinList || !asinList.length === 0) {
+      return res.status(400).json({ success: false, message: 'Oops, No Asins matching with that search.' });
     }
 
-    const finalizedOffer = extractOffersFromProduct(offersResult?.products?.[0]);
-
-    if (!finalizedOffer || Object.keys(finalizedOffer)?.length === 0) {
-      return res.status(400).json({ success: false, message: 'Oops, This product has no offers.' });
-    }
-
-    const sellerIds = [...new Set(finalizedOffer.offers.map((o) => o.sellerId))];
-    const sellerIdParam = sellerIds.join(',');
-
-    const sellerInfo = await getSellerInfoFromKeepa(sellerIdParam);
-
-    const enrichedOffers = enrichOffersWithSeller(finalizedOffer, sellerInfo);
-
-    return res.status(200).json({ success: true, asin: asin, offer: enrichedOffers });
+    return res.status(200).json({ success: true, asins: asinList });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-const getGraphImage = (req, res) => {
-  const { asin } = req.query;
-  if (!asin) {
-    return res.status(400).json({ success: false, message: 'ASIN is required' });
-  }
-  getGraphImageFromKeepa(asin, res);
-};
-
-module.exports = { searchProducts, getOffersOfProduct, getGraphImage };
+module.exports = { getProducts, searchProducts, findProductAsins };
