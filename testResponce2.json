@@ -1,169 +1,932 @@
 {
-  "address": ["2365 Tipton Drive", "Charlotte", "NC", "28206", "US"],
-  "avgBuyBoxCompetitors": 1.0780141,
-  "businessName": "Lightning X Products, Inc",
-  "buyBoxNewOwnershipRate": 97,
-  "buyBoxUsedOwnershipRate": 0,
-  "competitors": [
-    {
-      "percent": 2,
-      "sellerId": "A2Z0OVEQKCKJFK"
+  "buyBoxStats": {
+    "A1HXKHG5B499C": {
+      "avgNewOfferCount": 69,
+      "avgPrice": 3591,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7677836,
+      "percentageWon": 14.472222
     },
-    {
-      "percent": 2,
-      "sellerId": "A38DNG5HTFN4HK"
+    "AGX68SBPQWBSD": {
+      "avgNewOfferCount": 56,
+      "avgPrice": 3976,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7660368,
+      "percentageWon": 8.208334
     },
-    {
-      "percent": 1,
-      "sellerId": "A1CTS0RS54FGYD"
+    "A1YEIGJAWGP2IJ": {
+      "avgNewOfferCount": 15,
+      "avgPrice": 4982,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7599744,
+      "percentageWon": 6.1141977
     },
-    {
-      "percent": 1,
-      "sellerId": "A2ARKDQYPSRASS"
+    "AZ2NZKSPXPOR7": {
+      "avgNewOfferCount": 64,
+      "avgPrice": 3606,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7705064,
+      "percentageWon": 4.137346
     },
-    {
-      "percent": 1,
-      "sellerId": "A2CJ1E2LSWXBF7"
+    "A2F79GQB95KTOZ": {
+      "avgNewOfferCount": 45,
+      "avgPrice": 3800,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7700880,
+      "percentageWon": 3.998457
     },
-    {
-      "percent": 1,
-      "sellerId": "ATVPDKIKX0DER"
+    "A396XK7F6GWEPD": {
+      "avgNewOfferCount": 49,
+      "avgPrice": 4006,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7705826,
+      "percentageWon": 3.881173
     },
-    {
-      "percent": 1,
-      "sellerId": "A1VAOK0X3NE5G9"
+    "A14NTV8FOT6CGY": {
+      "avgNewOfferCount": 43,
+      "avgPrice": 3503,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7706824,
+      "percentageWon": 3.2314816
     },
-    {
-      "percent": 1,
-      "sellerId": "A23R5KN439NQZ3"
+    "A1CZVKIR91PVLI": {
+      "avgNewOfferCount": 57,
+      "avgPrice": 3762,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7626996,
+      "percentageWon": 3.0401235
     },
-    {
-      "percent": 1,
-      "sellerId": "A25KC4I3K8FZ6H"
+    "AGUU4DDKGU3GY": {
+      "avgNewOfferCount": 38,
+      "avgPrice": 3983,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7699158,
+      "percentageWon": 2.8179011
     },
-    {
-      "percent": 1,
-      "sellerId": "A2UO5JG2CZ3CJ2"
+    "A2N7W61EHUIJOJ": {
+      "avgNewOfferCount": 65,
+      "avgPrice": 3583,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7637696,
+      "percentageWon": 2.618827
+    },
+    "A2XCFEWMNA6BXK": {
+      "avgNewOfferCount": 21,
+      "avgPrice": 4932,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7602580,
+      "percentageWon": 2.5771606
+    },
+    "A1FGP5M704EMTS": {
+      "avgNewOfferCount": 66,
+      "avgPrice": 3534,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7627740,
+      "percentageWon": 2.441358
+    },
+    "A11LTRXH0RBM01": {
+      "avgNewOfferCount": 51,
+      "avgPrice": 3792,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7682520,
+      "percentageWon": 2.037037
+    },
+    "A1E6R2HN671IQO": {
+      "avgNewOfferCount": 26,
+      "avgPrice": 4829,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7681704,
+      "percentageWon": 1.9722221
+    },
+    "A3E1YIHYIH79M2": {
+      "avgNewOfferCount": 54,
+      "avgPrice": 3808,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7676092,
+      "percentageWon": 1.9212964
+    },
+    "AILI5Y6HBV4F3": {
+      "avgNewOfferCount": 56,
+      "avgPrice": 3698,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7664480,
+      "percentageWon": 1.8888888
+    },
+    "A130OSESJ9CH2": {
+      "avgNewOfferCount": 43,
+      "avgPrice": 3975,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7707088,
+      "percentageWon": 1.5787038
+    },
+    "A3H9VD7D5B96RK": {
+      "avgNewOfferCount": 15,
+      "avgPrice": 5119,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7682110,
+      "percentageWon": 1.3333334
+    },
+    "A3JGHLCCFVUU42": {
+      "avgNewOfferCount": 19,
+      "avgPrice": 4897,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7599092,
+      "percentageWon": 1.2438271
+    },
+    "A2URH7183HLZ8Q": {
+      "avgNewOfferCount": 36,
+      "avgPrice": 4226,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7614478,
+      "percentageWon": 1.2175926
+    },
+    "AHWO5QOLII7KC": {
+      "avgNewOfferCount": 14,
+      "avgPrice": 5099,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7585952,
+      "percentageWon": 1.2006173
+    },
+    "A35DZ5FWOQPI9J": {
+      "avgNewOfferCount": 15,
+      "avgPrice": 5137,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7599140,
+      "percentageWon": 1.1712962
+    },
+    "A16V7WBAB032J": {
+      "avgNewOfferCount": 19,
+      "avgPrice": 5183,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7677448,
+      "percentageWon": 1.1311729
+    },
+    "AY4DYK05OC5H": {
+      "avgNewOfferCount": 75,
+      "avgPrice": 3399,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7650766,
+      "percentageWon": 1.0864197
+    },
+    "A3DCD1R7KDTNOJ": {
+      "avgNewOfferCount": 80,
+      "avgPrice": 3413,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7643200,
+      "percentageWon": 1.0447531
+    },
+    "A1SIWIHK8CQAZ7": {
+      "avgNewOfferCount": 74,
+      "avgPrice": 3427,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7650916,
+      "percentageWon": 0.8626543
+    },
+    "A39RWS4KBRHBV3": {
+      "avgNewOfferCount": 30,
+      "avgPrice": 4585,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7606876,
+      "percentageWon": 0.81790125
+    },
+    "A1CFDUUVISQOBG": {
+      "avgNewOfferCount": 50,
+      "avgPrice": 3658,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7681838,
+      "percentageWon": 0.81481475
+    },
+    "A3ADRPPTFCPVVZ": {
+      "avgNewOfferCount": 58,
+      "avgPrice": 3818,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7686408,
+      "percentageWon": 0.80246913
+    },
+    "A1S2UZ473NCHIG": {
+      "avgNewOfferCount": 48,
+      "avgPrice": 3695,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7700752,
+      "percentageWon": 0.79938275
+    },
+    "A2YBCRPWTP9M3I": {
+      "avgNewOfferCount": 72,
+      "avgPrice": 3717,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7669674,
+      "percentageWon": 0.75617284
+    },
+    "A2EQE1O6UU4ZKN": {
+      "avgNewOfferCount": 60,
+      "avgPrice": 3893,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7706222,
+      "percentageWon": 0.74228394
+    },
+    "A3LKWE2A4BMIBL": {
+      "avgNewOfferCount": 72,
+      "avgPrice": 3492,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7666220,
+      "percentageWon": 0.74228394
+    },
+    "A8PEXSLRSCNI2": {
+      "avgNewOfferCount": 13,
+      "avgPrice": 5339,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7588072,
+      "percentageWon": 0.7407407
+    },
+    "A1MBC4DXP54TN9": {
+      "avgNewOfferCount": 32,
+      "avgPrice": 4536,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7609360,
+      "percentageWon": 0.70987654
+    },
+    "AK9FCU06GFGKR": {
+      "avgNewOfferCount": 33,
+      "avgPrice": 4084,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7612660,
+      "percentageWon": 0.6882716
+    },
+    "A1E18679ZT19A8": {
+      "avgNewOfferCount": 63,
+      "avgPrice": 3899,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7707740,
+      "percentageWon": 0.67746913
+    },
+    "A1TUH3LXB038M2": {
+      "avgNewOfferCount": 31,
+      "avgPrice": 4556,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7609764,
+      "percentageWon": 0.6435185
+    },
+    "AGZ8ORFHS4400": {
+      "avgNewOfferCount": 32,
+      "avgPrice": 4587,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7611720,
+      "percentageWon": 0.6435185
+    },
+    "A1C98HMT9189MD": {
+      "avgNewOfferCount": 58,
+      "avgPrice": 3672,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7661738,
+      "percentageWon": 0.62191355
+    },
+    "A1DIV7RK386GWB": {
+      "avgNewOfferCount": 53,
+      "avgPrice": 3862,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7704668,
+      "percentageWon": 0.6157408
+    },
+    "ANCEXKW3RKZUE": {
+      "avgNewOfferCount": 49,
+      "avgPrice": 3799,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7702228,
+      "percentageWon": 0.5601852
+    },
+    "A31UGDEJSTSCND": {
+      "avgNewOfferCount": 52,
+      "avgPrice": 3479,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7665922,
+      "percentageWon": 0.54320985
+    },
+    "A3QYBTDTWH2HPM": {
+      "avgNewOfferCount": 58,
+      "avgPrice": 3399,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7671968,
+      "percentageWon": 0.52469134
+    },
+    "A1LFKEQ2AR11O2": {
+      "avgNewOfferCount": 29,
+      "avgPrice": 4620,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7610492,
+      "percentageWon": 0.4953704
+    },
+    "A2MVCMGZ2H7O0L": {
+      "avgNewOfferCount": 48,
+      "avgPrice": 3700,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7705510,
+      "percentageWon": 0.47530863
+    },
+    "AVFOY23EK31H8": {
+      "avgNewOfferCount": 53,
+      "avgPrice": 3750,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7699672,
+      "percentageWon": 0.47376543
+    },
+    "A2KG7XXVUZT7YT": {
+      "avgNewOfferCount": 43,
+      "avgPrice": 3901,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7689092,
+      "percentageWon": 0.4521605
+    },
+    "AJ7Z4XMSI3RSB": {
+      "avgNewOfferCount": 49,
+      "avgPrice": 3959,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7695900,
+      "percentageWon": 0.44290125
+    },
+    "A4XGQVD7S67VA": {
+      "avgNewOfferCount": 76,
+      "avgPrice": 3413,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7651600,
+      "percentageWon": 0.43055555
+    },
+    "A390D6H3UZIRX": {
+      "avgNewOfferCount": 53,
+      "avgPrice": 4100,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7701996,
+      "percentageWon": 0.42592594
+    },
+    "A2WKHVZ2BULOCR": {
+      "avgNewOfferCount": 64,
+      "avgPrice": 3614,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7658752,
+      "percentageWon": 0.4228395
+    },
+    "APXHYZJ0SKTST": {
+      "avgNewOfferCount": 56,
+      "avgPrice": 3795,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7676514,
+      "percentageWon": 0.4212963
+    },
+    "A39ZDEB7Y7J146": {
+      "avgNewOfferCount": 65,
+      "avgPrice": 3808,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7682836,
+      "percentageWon": 0.4027778
+    },
+    "ARV58E9FB1U0X": {
+      "avgNewOfferCount": 56,
+      "avgPrice": 3954,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7671118,
+      "percentageWon": 0.30864197
+    },
+    "A3GHAXOXDYDP8F": {
+      "avgNewOfferCount": 54,
+      "avgPrice": 3702,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7702124,
+      "percentageWon": 0.30401236
+    },
+    "A1XAKNNZJ47PX7": {
+      "avgNewOfferCount": 66,
+      "avgPrice": 3479,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7658980,
+      "percentageWon": 0.2962963
+    },
+    "ADPIARY3H7S17": {
+      "avgNewOfferCount": 48,
+      "avgPrice": 4040,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7617398,
+      "percentageWon": 0.27160493
+    },
+    "A1A44X3MAI9GZV": {
+      "avgNewOfferCount": 53,
+      "avgPrice": 3789,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7700288,
+      "percentageWon": 0.23456791
+    },
+    "AQKODUIYU27ZU": {
+      "avgNewOfferCount": 35,
+      "avgPrice": 4175,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7684594,
+      "percentageWon": 0.23148148
+    },
+    "A36SFAJ0BQXN69": {
+      "avgNewOfferCount": 62,
+      "avgPrice": 3700,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7671288,
+      "percentageWon": 0.21141975
+    },
+    "A34U0M1YUI0YDG": {
+      "avgNewOfferCount": 55,
+      "avgPrice": 4100,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7672444,
+      "percentageWon": 0.20833334
+    },
+    "A1ZC39POGPZP2C": {
+      "avgNewOfferCount": 86,
+      "avgPrice": 3550,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7636730,
+      "percentageWon": 0.20679012
+    },
+    "A2FLOJ7LJJ2NXG": {
+      "avgNewOfferCount": 21,
+      "avgPrice": 5000,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7598220,
+      "percentageWon": 0.20679012
+    },
+    "AUEBE3YRHAA01": {
+      "avgNewOfferCount": 58,
+      "avgPrice": 3867,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7704244,
+      "percentageWon": 0.1898148
+    },
+    "APOQRBW5BKEXZ": {
+      "avgNewOfferCount": 82,
+      "avgPrice": 3776,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7632896,
+      "percentageWon": 0.18364199
+    },
+    "A2DFSE6O8O81C6": {
+      "avgNewOfferCount": 57,
+      "avgPrice": 3600,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7702672,
+      "percentageWon": 0.18209876
+    },
+    "A3UA1LGIQTYM3O": {
+      "avgNewOfferCount": 49,
+      "avgPrice": 3939,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7695392,
+      "percentageWon": 0.17592593
+    },
+    "A27QAO600LKTIF": {
+      "avgNewOfferCount": 49,
+      "avgPrice": 3500,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7697038,
+      "percentageWon": 0.16820987
+    },
+    "A1Z95WQ7FCQHGL": {
+      "avgNewOfferCount": 84,
+      "avgPrice": 3804,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7640568,
+      "percentageWon": 0.15432099
+    },
+    "ASU3K8E8BE7RC": {
+      "avgNewOfferCount": 62,
+      "avgPrice": 3749,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7661880,
+      "percentageWon": 0.14660494
+    },
+    "AQHG47LJ67NSZ": {
+      "avgNewOfferCount": 26,
+      "avgPrice": 4747,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7610672,
+      "percentageWon": 0.14660494
+    },
+    "A3APMG5EIN0JU9": {
+      "avgNewOfferCount": 57,
+      "avgPrice": 3522,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7673132,
+      "percentageWon": 0.14197531
+    },
+    "A1GJW2Z32UQRFB": {
+      "avgNewOfferCount": 58,
+      "avgPrice": 3800,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7672442,
+      "percentageWon": 0.14197531
+    },
+    "A1Z4H32H3HOR4Z": {
+      "avgNewOfferCount": 76,
+      "avgPrice": 3553,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7651588,
+      "percentageWon": 0.13425927
+    },
+    "AOUPJXXMH0OIO": {
+      "avgNewOfferCount": 61,
+      "avgPrice": 3695,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7706386,
+      "percentageWon": 0.12654321
+    },
+    "A31OM0OU3IQ83K": {
+      "avgNewOfferCount": 87,
+      "avgPrice": 3490,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7638982,
+      "percentageWon": 0.12191358
+    },
+    "A5XJBM8V1VKHT": {
+      "avgNewOfferCount": 62,
+      "avgPrice": 3697,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7705692,
+      "percentageWon": 0.12037037
+    },
+    "A1UWLDPITJMD0Y": {
+      "avgNewOfferCount": 39,
+      "avgPrice": 3500,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7690644,
+      "percentageWon": 0.10802469
+    },
+    "A1VJPMBYHS1IV": {
+      "avgNewOfferCount": 56,
+      "avgPrice": 4200,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7663308,
+      "percentageWon": 0.095679015
+    },
+    "A1STC5ORL07HDV": {
+      "avgNewOfferCount": 64,
+      "avgPrice": 3892,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7707696,
+      "percentageWon": 0.08950617
+    },
+    "A33HSECU5TKETS": {
+      "avgNewOfferCount": 14,
+      "avgPrice": 5006,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7589074,
+      "percentageWon": 0.083333336
+    },
+    "A1E9FT1UFOTH9W": {
+      "avgNewOfferCount": 19,
+      "avgPrice": 5718,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7638816,
+      "percentageWon": 0.08024692
+    },
+    "AHLS3YTYC8QN8": {
+      "avgNewOfferCount": 54,
+      "avgPrice": 4000,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7673608,
+      "percentageWon": 0.06790123
+    },
+    "AGQDBF0UGCQXL": {
+      "avgNewOfferCount": 54,
+      "avgPrice": 4233,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7664498,
+      "percentageWon": 0.06481481
+    },
+    "A2YNI2ESM03DX6": {
+      "avgNewOfferCount": 43,
+      "avgPrice": 3899,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7689170,
+      "percentageWon": 0.063271604
+    },
+    "A3NZMFVZP3K21E": {
+      "avgNewOfferCount": 48,
+      "avgPrice": 4000,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7696820,
+      "percentageWon": 0.0617284
+    },
+    "A3KFBMSXY0R1DV": {
+      "avgNewOfferCount": 34,
+      "avgPrice": 4799,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7612662,
+      "percentageWon": 0.058641978
+    },
+    "ARGTW8RFQ3UFU": {
+      "avgNewOfferCount": 54,
+      "avgPrice": 4242,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7673240,
+      "percentageWon": 0.041666668
+    },
+    "A2TF87ZTFDIB61": {
+      "avgNewOfferCount": 21,
+      "avgPrice": 4999,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7609692,
+      "percentageWon": 0.04012346
+    },
+    "A1PHOMK8891FQQ": {
+      "avgNewOfferCount": 43,
+      "avgPrice": 4397,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7684636,
+      "percentageWon": 0.03549383
+    },
+    "ANO6Z24CSDVHY": {
+      "avgNewOfferCount": 47,
+      "avgPrice": 4332,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7683424,
+      "percentageWon": 0.033950616
+    },
+    "A1SQ0WECXGL471": {
+      "avgNewOfferCount": 44,
+      "avgPrice": 4385,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7683746,
+      "percentageWon": 0.033950616
+    },
+    "A3R8CMIYUSWZE7": {
+      "avgNewOfferCount": 42,
+      "avgPrice": 3500,
+      "avgUsedOfferCount": -1,
+      "isFBA": false,
+      "lastSeen": 7689316,
+      "percentageWon": 0.033950616
+    },
+    "A2ZE0B7X11FYCB": {
+      "avgNewOfferCount": 66,
+      "avgPrice": 4030,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7656980,
+      "percentageWon": 0.033950616
+    },
+    "A2SM73VTU8Y7GT": {
+      "avgNewOfferCount": 33,
+      "avgPrice": 4889,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7611764,
+      "percentageWon": 0.0308642
+    },
+    "A27W7QX3MXCIPR": {
+      "avgNewOfferCount": 48,
+      "avgPrice": 3600,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7696552,
+      "percentageWon": 0.027777778
+    },
+    "A112D8YVQ42TAB": {
+      "avgNewOfferCount": 57,
+      "avgPrice": 4012,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7666038,
+      "percentageWon": 0.024691358
+    },
+    "A285XI99IEQHMC": {
+      "avgNewOfferCount": 46,
+      "avgPrice": 4354,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7683390,
+      "percentageWon": 0.024691358
+    },
+    "A270276WDAZOJ2": {
+      "avgNewOfferCount": 40,
+      "avgPrice": 4406,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7685134,
+      "percentageWon": 0.02006173
+    },
+    "A2E19GIKUABALC": {
+      "avgNewOfferCount": 47,
+      "avgPrice": 4290,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7617466,
+      "percentageWon": 0.018518519
+    },
+    "A3O8W6ERYHUVT0": {
+      "avgNewOfferCount": 64,
+      "avgPrice": 3990,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7706918,
+      "percentageWon": 0.0154321
+    },
+    "A1HDSL55N2HEA9": {
+      "avgNewOfferCount": 52,
+      "avgPrice": 4307,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7664616,
+      "percentageWon": 0.00771605
+    },
+    "A1CZFWQYX1NSHX": {
+      "avgNewOfferCount": 73,
+      "avgPrice": 3751,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7647868,
+      "percentageWon": 0.00771605
+    },
+    "AP1PRMRPMAC9D": {
+      "avgNewOfferCount": 64,
+      "avgPrice": 3694,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7707668,
+      "percentageWon": 0.0061728396
+    },
+    "A364RMMNA2CEUX": {
+      "avgNewOfferCount": 76,
+      "avgPrice": 3999,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7629332,
+      "percentageWon": 0.0061728396
+    },
+    "A2HMEHEIWLPJ25": {
+      "avgNewOfferCount": 73,
+      "avgPrice": 3800,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7653312,
+      "percentageWon": 0.0046296297
+    },
+    "A38VSQS0500Z79": {
+      "avgNewOfferCount": 53,
+      "avgPrice": 4279,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7678034,
+      "percentageWon": 0.0046296297
+    },
+    "AZ58EQ8R1O8B8": {
+      "avgNewOfferCount": 66,
+      "avgPrice": 3999,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7657534,
+      "percentageWon": 0.0030864198
+    },
+    "AO7YWDCFO7OXX": {
+      "avgNewOfferCount": 60,
+      "avgPrice": 4100,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7659228,
+      "percentageWon": 0.0030864198
+    },
+    "A2LZPGVXR2OIQW": {
+      "avgNewOfferCount": 70,
+      "avgPrice": 4118,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7623212,
+      "percentageWon": 0.0030864198
+    },
+    "AQFYAACZKRQDZ": {
+      "avgNewOfferCount": 64,
+      "avgPrice": 3915,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7707110,
+      "percentageWon": 0.0015432099
+    },
+    "ATNR63R7BQHBL": {
+      "avgNewOfferCount": 76,
+      "avgPrice": 3819,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7629006,
+      "percentageWon": 0.0015432099
+    },
+    "A2MT8V35EX129T": {
+      "avgNewOfferCount": 60,
+      "avgPrice": 3850,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7661740,
+      "percentageWon": 0.0015432099
+    },
+    "A3O7DFA1B67CCP": {
+      "avgNewOfferCount": 59,
+      "avgPrice": 3698,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7704348,
+      "percentageWon": 0.0015432099
+    },
+    "A2NDBFBBXSCX3E": {
+      "avgNewOfferCount": 79,
+      "avgPrice": 3900,
+      "avgUsedOfferCount": -1,
+      "isFBA": true,
+      "lastSeen": 7641842,
+      "percentageWon": 0.0015432099
     }
-  ],
-  "currentRating": 96,
-  "currentRatingCount": 5789,
-  "domainId": 1,
-  "hasFBA": true,
-  "isScammer": false,
-  "lastRatingUpdate": 7706062,
-  "lastUpdate": 7706062,
-  "negativeRating": [9, 13, 13, 2],
-  "neutralRating": [0, 0, 1, 1],
-  "phoneNumber": "+17042950299",
-  "positiveRating": [91, 87, 87, 96],
-  "ratingCount": [11, 38, 224, 5789],
-  "ratingsLast30Days": 9,
-  "recentFeedback": [
-    {
-      "date": 7705440,
-      "feedback": "I did not receive this.",
-      "isStriked": true,
-      "rating": 10
-    },
-    {
-      "date": 7702560,
-      "feedback": "Actually arrived early. My son is very pleased with the patch.",
-      "isStriked": false,
-      "rating": 50
-    },
-    {
-      "date": 7699680,
-      "feedback": "Lost in shipping very awful tracking info",
-      "isStriked": false,
-      "rating": 10
-    },
-    {
-      "date": 7693920,
-      "feedback": "great",
-      "isStriked": false,
-      "rating": 50
-    },
-    {
-      "date": 7688160,
-      "feedback": "Excelente",
-      "isStriked": false,
-      "rating": 50
-    }
-  ],
-  "sellerBrandStatistics": [
-    {
-      "avg30SalesRank": 365202,
-      "brand": "lightning x products",
-      "productCount": 276,
-      "productCountWithAmazonOffer": 0
-    },
-    {
-      "avg30SalesRank": 59484,
-      "brand": "north american rescue",
-      "productCount": 5,
-      "productCountWithAmazonOffer": 4
-    },
-    {
-      "avg30SalesRank": 7207,
-      "brand": "swat-t",
-      "productCount": 1,
-      "productCountWithAmazonOffer": 0
-    }
-  ],
-  "sellerCategoryStatistics": [
-    {
-      "avg30SalesRank": 385844,
-      "catId": 3375251,
-      "productCount": 115,
-      "productCountWithAmazonOffer": 0
-    },
-    {
-      "avg30SalesRank": 255677,
-      "catId": 3760901,
-      "productCount": 104,
-      "productCountWithAmazonOffer": 1
-    },
-    {
-      "avg30SalesRank": 766809,
-      "catId": 7141123011,
-      "productCount": 18,
-      "productCountWithAmazonOffer": 0
-    },
-    {
-      "avg30SalesRank": 234728,
-      "catId": 228013,
-      "productCount": 15,
-      "productCountWithAmazonOffer": 0
-    },
-    {
-      "avg30SalesRank": 134921,
-      "catId": 16310091,
-      "productCount": 14,
-      "productCountWithAmazonOffer": 2
-    },
-    {
-      "avg30SalesRank": 1014839,
-      "catId": 15684181,
-      "productCount": 11,
-      "productCountWithAmazonOffer": 1
-    },
-    {
-      "avg30SalesRank": 356730,
-      "catId": 2617941011,
-      "productCount": 3,
-      "productCountWithAmazonOffer": 0
-    },
-    {
-      "avg30SalesRank": 62238,
-      "catId": 11091801,
-      "productCount": 2,
-      "productCountWithAmazonOffer": 0
-    }
-  ],
-  "sellerId": "A39JHNLVFNGNRI",
-  "sellerName": "Lightning X Products, Inc",
-  "shipsFromChina": false,
-  "totalStorefrontAsins": [7679472, 312],
-  "trackedSince": 3068692
+  }
 }

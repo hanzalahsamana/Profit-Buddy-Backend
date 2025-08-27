@@ -9,6 +9,7 @@ const {
   AMAZON_PRICE_HISTORY_CONSTANT,
   NEW_PRICE_HISTORY_CONSTANT,
   OFFER_COUNT_HISTORY_CONSTANT,
+  LIST_PRICE_HISTORY_CONSTANT,
 } = require('../Enums/KeepaConstant');
 const { gramsToPounds, gramsToOunce, mmToInch, mmToCm } = require('./Converter');
 const { buildFlatGraphData, extractGraphData, priceTransform, rankTransform } = require('./GraphCsvUtils');
@@ -43,10 +44,20 @@ const extractNeededDataFromProduct = (product) => {
   // Info
   const buyboxHistory = csv[BUYBOX_PRICE_HISTORY_CONSTANT] || [];
   const salesRankHistory = csv[SALES_RANK_HISTORY_CONSTANT] || [];
-  if (buyboxHistory.length || salesRankHistory.length || product.monthlySold || product.competitivePriceThreshold || product.packageWeight || product?.itemWeight) {
+  const listPriceHistory = csv[LIST_PRICE_HISTORY_CONSTANT] || [];
+  if (
+    buyboxHistory.length ||
+    salesRankHistory.length ||
+    listPriceHistory ||
+    product.monthlySold ||
+    product.competitivePriceThreshold ||
+    product.packageWeight ||
+    product?.itemWeight
+  ) {
     extractedData.info = {};
     if (buyboxHistory.length) extractedData.info.sellPrice = buyboxHistory.at(-2) / 100 || 0;
     if (salesRankHistory.length) extractedData.info.sellRank = salesRankHistory.at(-1) || 0;
+    if (listPriceHistory.length) extractedData.info.listPrice = listPriceHistory.at(-1) / 100 || 0;
     if (product.monthlySold) extractedData.info.monthlySold = product.monthlySold;
     if (product.competitivePriceThreshold) extractedData.info.competitivePriceThreshold = product.competitivePriceThreshold / 100;
   }
