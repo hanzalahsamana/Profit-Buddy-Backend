@@ -4,6 +4,7 @@ const { extractNeededDataFromProduct } = require('../Utils/ExtractNeededData');
 
 const getProducts = async (req, res) => {
   try {
+    // return res.status(200).json({ success: false, message: undefined });
     const { asin } = req.query;
 
     if (!asin) {
@@ -58,13 +59,13 @@ const searchProducts = async (req, res) => {
 
 const findProductAsins = async (req, res) => {
   try {
-    const querry = req?.query;
+    const { selection } = req?.query;
 
-    if (!querry || !Object.keys(querry).length) {
+    if (!selection) {
       return res.status(400).json({ success: false, message: 'Search query is required' });
     }
 
-    const asinList = await findProductsAsinsFromKeepa(querry);
+    const asinList = await findProductsAsinsFromKeepa(selection);
 
     if (!asinList || !asinList.length === 0) {
       return res.status(400).json({ success: false, message: 'Oops, No Asins matching with that search.' });

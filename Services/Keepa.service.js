@@ -120,15 +120,16 @@ const getCategoryInfoFromKeepa = async (categoryId, query = {}) => {
 };
 
 const findProductsAsinsFromKeepa = async (query) => {
-  if (!query || !Object.keys(query).length) return;
+  if (!query) return;
 
   try {
     const params = new URLSearchParams({
       key: keepa.apiKey,
       domain: keepa.amazonDomain,
+      selection: query,
     });
 
-    const { data } = await httpClient.post(`${keepa.baseURL}/query?${params.toString()}`, query);
+    const { data } = await httpClient.get(`${keepa.baseURL}/query?${params.toString()}`);
 
     if (data.error && data.error.length > 0) {
       throw new Error(`Keepa API Error: ${data.error.join(', ')}`);

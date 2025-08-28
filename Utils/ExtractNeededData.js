@@ -30,6 +30,7 @@ const extractNeededDataFromProduct = (product) => {
   if (product.title) extractedData.title = product.title;
   if (product.asin) extractedData.asin = product.asin;
   if (product.categoryTree?.length) extractedData.category = product.categoryTree[0]?.name || 'Uncategorized';
+  if (product.brand) extractedData.brand = product.brand;
   if (product.buyBoxSellerIdHistory?.length) extractedData.sellerId = product?.buyBoxSellerIdHistory?.at(-1);
 
   // Reviews
@@ -88,25 +89,21 @@ const extractNeededDataFromProduct = (product) => {
     extractedData.graphData = {};
 
     const graphConfigs = {
-      salesGraph: {
+      keepaGraphData: {
         keys: {
           buyboxHistory: BUYBOX_PRICE_HISTORY_CONSTANT,
           amazonHistory: AMAZON_PRICE_HISTORY_CONSTANT,
           salesRankHistory: SALES_RANK_HISTORY_CONSTANT,
           newPriceHistory: NEW_PRICE_HISTORY_CONSTANT,
+          offerCountHistory: OFFER_COUNT_HISTORY_CONSTANT,
         },
         series: [
           { key: 'buyBox', source: 'buyboxHistory', step: 3, transform: priceTransform },
           { key: 'amazon', source: 'amazonHistory', step: 2, transform: priceTransform },
           { key: 'salesRank', source: 'salesRankHistory', step: 2, transform: rankTransform },
           { key: 'newPrice', source: 'newPriceHistory', step: 2, transform: priceTransform },
+          { key: 'offerCount', source: 'offerCountHistory', step: 2, transform: rankTransform },
         ],
-      },
-      offerGraph: {
-        keys: {
-          offerCountHistory: OFFER_COUNT_HISTORY_CONSTANT,
-        },
-        series: [{ key: 'offerCount', source: 'offerCountHistory', step: 2, transform: rankTransform }],
       },
     };
 
