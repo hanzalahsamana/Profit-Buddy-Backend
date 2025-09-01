@@ -1,4 +1,4 @@
-const { OunceToPound } = require('./Converter');
+const { OunceToPound, gramsToPounds } = require('./Converter');
 
 const fbaInboundPlacementFees = {
   smallStandard: {
@@ -114,4 +114,9 @@ const getFBAInboundPlacementFees = (width, length, height, weightOz) => {
   };
 };
 
-module.exports = { getFBAInboundPlacementFees };
+const CalcShippingFee = (weightInGrams) => {
+  const weight = gramsToPounds(weightInGrams);
+  return weight * 0.6;
+};
+
+module.exports = { getFBAInboundPlacementFees , CalcShippingFee };

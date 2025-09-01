@@ -26,36 +26,41 @@ const rankTransform = (v) => {
   return Number.isNaN(n) ? null : n;
 };
 
-const clamp90DaysData = (data) => {
-  const today = new Date('2025-08-28'); // <-- replace with new Date()
-  const startDate = new Date(today);
-  startDate.setDate(today.getDate() - 90);
+const clampData = (data, days = 90) => {
+  const today = new Date();
 
-  // Normalize dates to Date objects
-  let normalized = data.map((d) => ({ ...d, date: new Date(d.date) }));
+  let startDate = null;
+  if (days && days !== 'all') {
+    startDate = new Date(today);
+    startDate.setDate(today.getDate() - days);
+  }
 
-  // Step 1: filter only inside the 90-day window
-  normalized = normalized.filter((d) => d.date >= startDate && d.date <= today);
+  let normalized = data.map((d) => ({
+    ...d,
+    date: new Date(d.date).getTime(),
+  }));
 
-  // Step 2: ensure startDate exists (30 May)
-  let first = normalized.find((d) => d.date.getTime() === startDate.getTime());
-  if (!first) {
-    // find nearest future record
-    const nearest = normalized.find((d) => d.date > startDate);
-    if (nearest) {
-      first = { ...nearest, date: new Date(startDate) };
-      normalized.unshift(first); // insert at beginning
+  if (days && days !== 'all') {
+    // Step 1: filter only inside the window
+    normalized = normalized.filter((d) => d.date >= startDate.getTime() && d.date <= today.getTime());
+
+    // Step 2: ensure startDate exists
+    let first = normalized.find((d) => d.date === startDate.getTime());
+    if (!first) {
+      const nearest = normalized.find((d) => d.date > startDate.getTime());
+      if (nearest) {
+        first = { ...nearest, date: startDate.getTime() };
+        normalized.unshift(first);
+      }
     }
   }
 
-  // Step 3: ensure today exists (28 Aug)
-  let last = normalized.find((d) => d.date.getTime() === today.getTime());
+  let last = normalized.find((d) => d.date === today.getTime());
   if (!last) {
-    // find nearest past record
-    const nearest = [...normalized].reverse().find((d) => d.date < today);
+    const nearest = [...normalized].reverse().find((d) => d.date < today.getTime());
     if (nearest) {
-      last = { ...nearest, date: new Date(today) };
-      normalized.push(last); // insert at end
+      last = { ...nearest, date: today.getTime() };
+      normalized.push(last);
     }
   }
 
@@ -115,6 +120,7 @@ const buildFlatGraphData = (graphData, seriesConfigs, opts = {}) => {
     priceDivisor = 100,
     forwardFill = true,
     fillInitialWithFirst = true, // <-- changed default to true
+    days = 90,
   } = opts;
 
   const seriesMaps = {};
@@ -131,11 +137,12 @@ const buildFlatGraphData = (graphData, seriesConfigs, opts = {}) => {
 
   let result = tsArray.map((keepaMinute) => {
     const ms = keepaToMs(keepaMinute);
-    const date = new Date(ms);
+    const date = ms;
     const entry = { date };
     for (const key in seriesMaps) {
       entry[key] = seriesMaps[key].get(keepaMinute) ?? null;
     }
+
     return entry;
   });
 
@@ -143,7 +150,8 @@ const buildFlatGraphData = (graphData, seriesConfigs, opts = {}) => {
     forwardFillSeries(result, Object.keys(seriesMaps), fillInitialWithFirst);
   }
 
-  result = clamp90DaysData(result);
+  result = clampData(result, days);
+  console.log(result);
 
   result = result.filter((entry) => Object.keys(seriesMaps).some((k) => entry[k] !== null));
 
@@ -164,4 +172,4 @@ const extractGraphData = (csv, config) => {
   return graphData;
 };
 
-module.exports = { extractGraphData, buildFlatGraphData, priceTransform, rankTransform };
+module.exports = { extractGraphData, buildFlatGraphData, priceTransform, rankTransform, keepaToMs };

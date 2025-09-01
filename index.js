@@ -3,6 +3,7 @@ require('dotenv').config({ quiet: true });
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mainRouter = require('./Routes/Routes.js');
+const { keepaToMs } = require('./Utils/GraphCsvUtils.js');
 
 const app = express();
 
@@ -23,6 +24,10 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
   res.send('Server online and ready for lift-off!');
 });
+
+const time = keepaToMs(7714794)
+console.log(new Date(1741164933840));
+
 
 app.use('/api/v1', mainRouter);
 

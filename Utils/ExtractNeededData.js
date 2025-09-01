@@ -13,7 +13,7 @@ const {
 } = require('../Enums/KeepaConstant');
 const { gramsToPounds, gramsToOunce, mmToInch, mmToCm } = require('./Converter');
 const { buildFlatGraphData, extractGraphData, priceTransform, rankTransform } = require('./GraphCsvUtils');
-const { getFBAInboundPlacementFees } = require('./PlacementFeeCalc');
+const { getFBAInboundPlacementFees, CalcShippingFee } = require('./FeeCalc');
 
 const extractNeededDataFromProduct = (product) => {
   if (!product) return {};
@@ -36,47 +36,53 @@ const extractNeededDataFromProduct = (product) => {
   // Reviews
   const ratingHistory = csv[RATING_CONSTANT] || [];
   const reviewCountHistory = csv[REVIEW_COUNT_CONSTANT] || [];
-  if (ratingHistory.length || reviewCountHistory.length) {
-    extractedData.reviews = {};
-    if (ratingHistory.length) extractedData.reviews.rating = ratingHistory.at(-1) / 10 || 0;
-    if (reviewCountHistory.length) extractedData.reviews.count = reviewCountHistory.at(-1) || 0;
-  }
+  extractedData.reviews = {};
+  if (ratingHistory.length) extractedData.reviews.rating = ratingHistory.at(-1) / 10 || 0;
+  if (reviewCountHistory.length) extractedData.reviews.count = reviewCountHistory.at(-1) || 0;
 
   // Info
   const buyboxHistory = csv[BUYBOX_PRICE_HISTORY_CONSTANT] || [];
-  const salesRankHistory = csv[SALES_RANK_HISTORY_CONSTANT] || [];
+  const newPriceHistory = csv[NEW_PRICE_HISTORY_CONSTANT] || [];
+  const amazonPriceHistory = csv[AMAZON_PRICE_HISTORY_CONSTANT] || [];
   const listPriceHistory = csv[LIST_PRICE_HISTORY_CONSTANT] || [];
-  if (
-    buyboxHistory.length ||
-    salesRankHistory.length ||
-    listPriceHistory ||
-    product.monthlySold ||
-    product.competitivePriceThreshold ||
-    product.packageWeight ||
-    product?.itemWeight
-  ) {
-    extractedData.info = {};
-    if (buyboxHistory.length) extractedData.info.sellPrice = buyboxHistory.at(-2) / 100 || 0;
-    if (salesRankHistory.length) extractedData.info.sellRank = salesRankHistory.at(-1) || 0;
-    if (listPriceHistory.length) extractedData.info.listPrice = listPriceHistory.at(-1) / 100 || 0;
-    if (product.monthlySold) extractedData.info.monthlySold = product.monthlySold;
-    if (product.competitivePriceThreshold) extractedData.info.competitivePriceThreshold = product.competitivePriceThreshold / 100;
+  const salesRankHistory = csv[SALES_RANK_HISTORY_CONSTANT] || [];
+
+  extractedData.info = {};
+
+  const getLastPrice = (arr, position = -1) => {
+    if (!arr.length) return null;
+    return arr.at(position) / 100;
+  };
+
+  if (buyboxHistory.at(-2) / 100 > 0) extractedData.info.salePrice = buyboxHistory.at(-2) / 100;
+  else {
+    const candidates = [getLastPrice(newPriceHistory), getLastPrice(amazonPriceHistory), getLastPrice(listPriceHistory)].filter((p) => p > 0);
+    const validSalePrice = candidates.length ? Math.min(...candidates) : 0;
+    const shippingFee = CalcShippingFee(product.packageWeight ?? product.itemWeight);
+    console.log(validSalePrice);
+
+    extractedData.info.salePrice = validSalePrice + shippingFee;
   }
 
+  if (amazonPriceHistory.length) extractedData.info.amazonPrice = amazonPriceHistory.at(-1) / 100 || 0;
+  if (buyboxHistory.length) extractedData.info.buybox = buyboxHistory.at(-2) / 100 || 0;
+  if (listPriceHistory.length) extractedData.info.listPrice = listPriceHistory.at(-1) / 100 || 0;
+  if (salesRankHistory.length) extractedData.info.sellRank = salesRankHistory.at(-1) || 0;
+  if (product.monthlySold) extractedData.info.monthlySold = product.monthlySold;
+  if (product.competitivePriceThreshold) extractedData.info.competitivePriceThreshold = product.competitivePriceThreshold / 100;
+
   // Dimension
-  if (product.packageWidth || product.packageLength || product.packageHeight || product.packageWeight) {
-    extractedData.dimension = {};
-    if (product.packageWidth) extractedData.dimension.width = `${mmToCm(product.packageWidth).toFixed(2)} cm (${mmToInch(product.packageWidth).toFixed(2)} in)`;
-    if (product.packageLength) extractedData.dimension.length = `${mmToCm(product.packageLength).toFixed(2)} cm (${mmToInch(product.packageLength).toFixed(2)} in)`;
-    if (product.packageHeight) extractedData.dimension.height = `${mmToCm(product.packageHeight).toFixed(2)} cm (${mmToInch(product.packageHeight).toFixed(2)} in)`;
-    if (product.packageWeight) extractedData.dimension.weight = `${gramsToOunce(product.packageWeight).toFixed(2)} oz`;
-  }
+  extractedData.dimension = {};
+  if (product.packageWidth) extractedData.dimension.width = `${mmToCm(product.packageWidth).toFixed(2)} cm (${mmToInch(product.packageWidth).toFixed(2)} in)`;
+  if (product.packageLength) extractedData.dimension.length = `${mmToCm(product.packageLength).toFixed(2)} cm (${mmToInch(product.packageLength).toFixed(2)} in)`;
+  if (product.packageHeight) extractedData.dimension.height = `${mmToCm(product.packageHeight).toFixed(2)} cm (${mmToInch(product.packageHeight).toFixed(2)} in)`;
+  if (product.packageWeight) extractedData.dimension.weight = `${gramsToPounds(product.packageWeight).toFixed(2)} lb (${gramsToOunce(product.packageWeight).toFixed(2)} oz)`;
 
   // Fees
   extractedData.fees = {};
   if (product.fbaFees?.pickAndPackFee) extractedData.fees.fbaFees = product.fbaFees.pickAndPackFee / 100;
   if (product.referralFeePercent) extractedData.fees.referralFeePercent = product.referralFeePercent / 100;
-  if (product.packageWeight ?? product.itemWeight) extractedData.fees.inboundShippingFee = gramsToPounds(product.packageWeight ?? product.itemWeight);
+  if (product.packageWeight ?? product.itemWeight) extractedData.fees.inboundShippingFee = CalcShippingFee(product.packageWeight ?? product.itemWeight);
   extractedData.fees.inboundPlacementFee = getFBAInboundPlacementFees(
     mmToInch(product.packageWidth),
     mmToInch(product.packageLength),
@@ -85,33 +91,7 @@ const extractNeededDataFromProduct = (product) => {
   );
 
   // Graph data
-  if (csv?.length) {
-    extractedData.graphData = {};
-
-    const graphConfigs = {
-      keepaGraphData: {
-        keys: {
-          buyboxHistory: BUYBOX_PRICE_HISTORY_CONSTANT,
-          amazonHistory: AMAZON_PRICE_HISTORY_CONSTANT,
-          salesRankHistory: SALES_RANK_HISTORY_CONSTANT,
-          newPriceHistory: NEW_PRICE_HISTORY_CONSTANT,
-          offerCountHistory: OFFER_COUNT_HISTORY_CONSTANT,
-        },
-        series: [
-          { key: 'buyBox', source: 'buyboxHistory', step: 3, transform: priceTransform },
-          { key: 'amazon', source: 'amazonHistory', step: 2, transform: priceTransform },
-          { key: 'salesRank', source: 'salesRankHistory', step: 2, transform: rankTransform },
-          { key: 'newPrice', source: 'newPriceHistory', step: 2, transform: priceTransform },
-          { key: 'offerCount', source: 'offerCountHistory', step: 2, transform: rankTransform },
-        ],
-      },
-    };
-
-    for (const [graphName, config] of Object.entries(graphConfigs)) {
-      const graphRawData = extractGraphData(csv, config);
-      extractedData.graphData[graphName] = buildFlatGraphData(graphRawData, config.series);
-    }
-  }
+  extractedData.graphData = extractGraphDataFromProduct(product, 90);
 
   return extractedData;
 };
@@ -231,4 +211,46 @@ const enrichSellersWithCategoryName = (sellerData, categories) => {
   return { ...sellerData, categories: enrichedCategories };
 };
 
-module.exports = { extractNeededDataFromProduct, extractOffersFromProduct, enrichOffersWithSeller, extractNeededDataFromSeller, enrichSellersWithCategoryName };
+const extractGraphDataFromProduct = (product, days) => {
+  if (!product) return {};
+
+  const graphData = {};
+  const csv = product.csv || [];
+
+  if (csv?.length) {
+    const graphConfigs = {
+      keepaGraphData: {
+        keys: {
+          buyboxHistory: BUYBOX_PRICE_HISTORY_CONSTANT,
+          amazonHistory: AMAZON_PRICE_HISTORY_CONSTANT,
+          salesRankHistory: SALES_RANK_HISTORY_CONSTANT,
+          newPriceHistory: NEW_PRICE_HISTORY_CONSTANT,
+          offerCountHistory: OFFER_COUNT_HISTORY_CONSTANT,
+        },
+        series: [
+          { key: 'buyBox', source: 'buyboxHistory', step: 3, transform: priceTransform },
+          { key: 'amazon', source: 'amazonHistory', step: 2, transform: priceTransform },
+          { key: 'salesRank', source: 'salesRankHistory', step: 2, transform: rankTransform },
+          { key: 'newPrice', source: 'newPriceHistory', step: 2, transform: priceTransform },
+          { key: 'offerCount', source: 'offerCountHistory', step: 2, transform: rankTransform },
+        ],
+      },
+    };
+
+    for (const [graphName, config] of Object.entries(graphConfigs)) {
+      const graphRawData = extractGraphData(csv, config);
+      graphData[graphName] = buildFlatGraphData(graphRawData, config.series, days ? { days } : {});
+    }
+  }
+
+  return graphData;
+};
+
+module.exports = {
+  extractNeededDataFromProduct,
+  extractOffersFromProduct,
+  enrichOffersWithSeller,
+  extractNeededDataFromSeller,
+  enrichSellersWithCategoryName,
+  extractGraphDataFromProduct,
+};
