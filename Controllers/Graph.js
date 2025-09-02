@@ -1,6 +1,6 @@
 const { getGraphImageFromKeepa, getProductsFromKeepa } = require('../Services/Keepa.service');
 const { extractGraphDataFromProduct } = require('../Utils/ExtractNeededData');
-const { isValidASIN } = require('../Utils/validator');
+const { isValidASIN } = require('../Utils/Validator');
 
 const getGraphImage = (req, res) => {
   const { asin } = req.query;

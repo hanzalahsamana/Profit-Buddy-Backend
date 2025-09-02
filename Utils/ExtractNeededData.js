@@ -13,7 +13,7 @@ const {
 } = require('../Enums/KeepaConstant');
 const { gramsToPounds, gramsToOunce, mmToInch, mmToCm } = require('./Converter');
 const { buildFlatGraphData, extractGraphData, priceTransform, rankTransform } = require('./GraphCsvUtils');
-const { getFBAInboundPlacementFees, CalcShippingFee } = require('./FeeCalc');
+const { getFBAInboundPlacementFees, CalcShippingFee, calculateStorageFee } = require('./FeeCalc');
 
 const extractNeededDataFromProduct = (product) => {
   if (!product) return {};
@@ -83,12 +83,15 @@ const extractNeededDataFromProduct = (product) => {
   if (product.fbaFees?.pickAndPackFee) extractedData.fees.fbaFees = product.fbaFees.pickAndPackFee / 100;
   if (product.referralFeePercent) extractedData.fees.referralFeePercent = product.referralFeePercent / 100;
   if (product.packageWeight ?? product.itemWeight) extractedData.fees.inboundShippingFee = CalcShippingFee(product.packageWeight ?? product.itemWeight);
-  extractedData.fees.inboundPlacementFee = getFBAInboundPlacementFees(
-    mmToInch(product.packageWidth),
-    mmToInch(product.packageLength),
-    mmToInch(product.packageHeight),
-    gramsToOunce(product.packageWeight)
-  );
+  extractedData.fees.inboundPlacementFee = getFBAInboundPlacementFees(product.packageWidth, product.packageLength, product.packageHeight, product.packageWeight);
+  extractedData.fees.storageFees = calculateStorageFee({
+    width: product.packageWidth,
+    length: product.packageLength,
+    height: product.packageHeight,
+    weight: product.packageWeight,
+    storageMonths: 1,
+    isDangerous: product?.isDangerous || false,
+  });
 
   // Graph data
   extractedData.graphData = extractGraphDataFromProduct(product, 90);
