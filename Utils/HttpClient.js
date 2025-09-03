@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const httpClient = axios.create({
-  timeout: 20000,
+  timeout: 200000,
 });
 
 module.exports = httpClient;
