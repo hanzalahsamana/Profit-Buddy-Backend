@@ -32,9 +32,6 @@ const calculateSellerMetricsLast30Days = (products, sellerId) => {
             totalSnapshots++;
             if (stock > 0) inStockSnapshots++;
             
-            // price from offerCSV corresponding to the timestamp
-            console.log('🥺🥺🥺🥺', offerCSV);
-
             for (let j = 0; j < offerCSV.length; j += 3) {
             if (offerCSV[j + 1] > 0) {
               prices.push(offerCSV[j + 1]);

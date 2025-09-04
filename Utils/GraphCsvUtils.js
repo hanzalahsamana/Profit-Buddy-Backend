@@ -26,43 +26,57 @@ const rankTransform = (v) => {
   return Number.isNaN(n) ? null : n;
 };
 
-const clampData = (data, days = 90) => {
-  const today = new Date();
+const clampData = (data, days = '90' || 'all') => {
+  
+  let formattedDays;
+  
+  if (days === 'all') {
+    // Keep all data
+    formattedDays = 'all';
+  } else {
+    // Convert to number of days
+    formattedDays = Number(days);
+  }
+  console.log(formattedDays);
 
-  let startDate = null;
-  if (days && days !== 'all') {
-    startDate = new Date(today);
-    startDate.setDate(today.getDate() - days);
+  const now = new Date();
+  const todayTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(); // local start-of-day
+  let startDateTs = null;
+  if (formattedDays && formattedDays !== 'all') {
+    const sd = new Date(now);
+    sd.setDate(sd.getDate() - formattedDays);
+    startDateTs = new Date(sd.getFullYear(), sd.getMonth(), sd.getDate()).getTime();
   }
 
-  let normalized = data.map((d) => ({
-    ...d,
-    date: new Date(d.date).getTime(),
-  }));
+  let normalized = data.map((d) => ({ ...d, date: new Date(d.date).getTime() }));
 
-  if (days && days !== 'all') {
-    // Step 1: filter only inside the window
-    normalized = normalized.filter((d) => d.date >= startDate.getTime() && d.date <= today.getTime());
+  normalized = normalized.map((d) => ({ ...d, date: Math.min(d.date, todayTs) }));
 
-    // Step 2: ensure startDate exists
-    let first = normalized.find((d) => d.date === startDate.getTime());
-    if (!first) {
-      const nearest = normalized.find((d) => d.date > startDate.getTime());
-      if (nearest) {
-        first = { ...nearest, date: startDate.getTime() };
-        normalized.unshift(first);
+  normalized.sort((a, b) => a.date - b.date);
+
+  const byDate = new Map();
+  for (const item of normalized) byDate.set(item.date, item);
+  normalized = Array.from(byDate.values()).sort((a, b) => a.date - b.date);
+
+  if (startDateTs !== null) {
+    normalized = normalized.filter((d) => d.date >= startDateTs && d.date <= todayTs);
+
+    if (normalized.length) {
+      if (normalized[0].date > startDateTs) {
+        normalized.unshift({ ...normalized[0], date: startDateTs });
       }
+    } else {
+      normalized = [{ date: startDateTs }, { date: todayTs }];
     }
   }
 
-  let last = normalized.find((d) => d.date === today.getTime());
-  if (!last) {
-    const nearest = [...normalized].reverse().find((d) => d.date < today.getTime());
-    if (nearest) {
-      last = { ...nearest, date: today.getTime() };
-      normalized.push(last);
-    }
+  if (!normalized.some((d) => d.date === todayTs)) {
+    const before = [...normalized].reverse().find((d) => d.date < todayTs);
+    if (before) normalized.push({ ...before, date: todayTs });
   }
+
+  console.log(normalized.at(-1));
+  
 
   return normalized;
 };
@@ -151,7 +165,6 @@ const buildFlatGraphData = (graphData, seriesConfigs, opts = {}) => {
   }
 
   result = clampData(result, days);
-  console.log(result);
 
   result = result.filter((entry) => Object.keys(seriesMaps).some((k) => entry[k] !== null));
 

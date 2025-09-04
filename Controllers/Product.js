@@ -35,7 +35,6 @@ const searchProducts = async (req, res) => {
     }
 
     const searchedResult = await searchProductsFromKeepa(searchTerm, page);
-    console.log(searchedResult);
 
     if (!searchedResult?.asinList || !searchedResult?.asinList.length === 0) {
       return res.status(400).json({ success: false, message: 'Oops, No products matching with that search.' });

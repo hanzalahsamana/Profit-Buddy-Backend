@@ -59,7 +59,6 @@ const extractNeededDataFromProduct = (product) => {
     const candidates = [getLastPrice(newPriceHistory), getLastPrice(amazonPriceHistory), getLastPrice(listPriceHistory)].filter((p) => p > 0);
     const validSalePrice = candidates.length ? Math.min(...candidates) : 0;
     const shippingFee = CalcShippingFee(product.packageWeight ?? product.itemWeight);
-    console.log(validSalePrice);
 
     extractedData.info.salePrice = validSalePrice + shippingFee;
   }
