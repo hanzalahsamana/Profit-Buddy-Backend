@@ -12,7 +12,7 @@ const {
   LIST_PRICE_HISTORY_CONSTANT,
 } = require('../Enums/KeepaConstant');
 const { gramsToPounds, gramsToOunce, mmToInch, mmToCm } = require('./Converter');
-const { buildFlatGraphData, extractGraphData, priceTransform, rankTransform } = require('./GraphCsvUtils');
+const { buildFlatGraphData, extractGraphData, priceTransform, rankTransform, getAggregateHistoryDays } = require('./GraphCsvUtils');
 const { getFBAInboundPlacementFees, CalcShippingFee, calculateStorageFee } = require('./FeeCalc');
 
 const extractNeededDataFromProduct = (product) => {
@@ -91,6 +91,8 @@ const extractNeededDataFromProduct = (product) => {
     storageMonths: 1,
     isDangerous: product?.isDangerous || false,
   });
+
+  extractedData.historyLength = getAggregateHistoryDays(csv);
 
   // Graph data
   extractedData.graphData = extractGraphDataFromProduct(product, 90);

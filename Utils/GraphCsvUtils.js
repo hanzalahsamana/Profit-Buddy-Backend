@@ -1,4 +1,11 @@
-const { KEEPA_EPOCH_START_MINUTES } = require('../Enums/KeepaConstant');
+const {
+  KEEPA_EPOCH_START_MINUTES,
+  AMAZON_PRICE_HISTORY_CONSTANT,
+  BUYBOX_PRICE_HISTORY_CONSTANT,
+  NEW_PRICE_HISTORY_CONSTANT,
+  SALES_RANK_HISTORY_CONSTANT,
+  OFFER_COUNT_HISTORY_CONSTANT,
+} = require('../Enums/KeepaConstant');
 
 const keepaToMs = (keepaMinute) => (Number(keepaMinute) + KEEPA_EPOCH_START_MINUTES) * 60000;
 
@@ -27,9 +34,8 @@ const rankTransform = (v) => {
 };
 
 const clampData = (data, days = '90' || 'all') => {
-  
   let formattedDays;
-  
+
   if (days === 'all') {
     // Keep all data
     formattedDays = 'all';
@@ -76,7 +82,6 @@ const clampData = (data, days = '90' || 'all') => {
   }
 
   console.log(normalized.at(-1));
-  
 
   return normalized;
 };
@@ -185,4 +190,32 @@ const extractGraphData = (csv, config) => {
   return graphData;
 };
 
-module.exports = { extractGraphData, buildFlatGraphData, priceTransform, rankTransform, keepaToMs };
+const getAggregateHistoryDays = (csv) =>{
+  const indexes = [
+    { index: AMAZON_PRICE_HISTORY_CONSTANT, step: 2 },
+    { index: BUYBOX_PRICE_HISTORY_CONSTANT, step: 3 },
+    { index: NEW_PRICE_HISTORY_CONSTANT, step: 2 },
+    { index: SALES_RANK_HISTORY_CONSTANT, step: 2 },
+    { index: OFFER_COUNT_HISTORY_CONSTANT, step: 2 },
+  ];
+
+  let earliest = Infinity;
+  let latest = -Infinity;
+
+  indexes.forEach(({ index, step }) => {
+    const arr = csv[index];
+    if (Array.isArray(arr) && arr.length >= step) {
+      const first = keepaToMs(arr[0]);
+      const last = keepaToMs(arr[arr.length - step]);
+      if (first < earliest) earliest = first;
+      if (last > latest) latest = last;
+    }
+  });
+
+  if (earliest === Infinity || latest === -Infinity) return 0;
+
+
+  const diffDays = Math.floor((latest - earliest) / (1000 * 60 * 60 * 24));
+  return diffDays + 1;
+}
+module.exports = { extractGraphData, buildFlatGraphData, priceTransform, rankTransform, keepaToMs , getAggregateHistoryDays };
