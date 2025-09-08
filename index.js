@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mainRouter = require('./Routes/Routes.js');
 const { keepaToMs } = require('./Utils/GraphCsvUtils.js');
+require("./Configurations/Database.js");
 
 const app = express();
 

@@ -1,6 +1,6 @@
 const { keepa } = require('../config');
-const httpClient = require('../Utils/HttpClient');
 const https = require('https');
+const httpClient = require('../Configurations/HttpClient');
 
 const searchProductsFromKeepa = async (searchTerm, page = 0) => {
   try {
