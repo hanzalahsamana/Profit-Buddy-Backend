@@ -4,7 +4,7 @@ const { searchProducts, findProductAsins, getProducts } = require('../Controller
 const { getOffersOfProduct } = require('../Controllers/Offer');
 const { getGraphImage, getGraphData } = require('../Controllers/Graph');
 const { getSellerInfo, calculateSellerRevenue } = require('../Controllers/Seller');
-const { getUserDetail } = require('../Controllers/user');
+const { getUserDetail } = require('../Controllers/User');
 const tokenChecker = require('../MiddleWares/TokenChecker');
 
 router.get('/products', tokenChecker, getProducts);
