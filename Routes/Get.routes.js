@@ -4,14 +4,17 @@ const { searchProducts, findProductAsins, getProducts } = require('../Controller
 const { getOffersOfProduct } = require('../Controllers/Offer');
 const { getGraphImage, getGraphData } = require('../Controllers/Graph');
 const { getSellerInfo, calculateSellerRevenue } = require('../Controllers/Seller');
+const { getUserDetail } = require('../Controllers/user');
+const tokenChecker = require('../MiddleWares/TokenChecker');
 
-router.get('/products', getProducts);
-router.get('/search-product', searchProducts);
-router.get('/product-offers', getOffersOfProduct);
-router.get('/graph-image', getGraphImage);
-router.get('/seller-info', getSellerInfo);
-router.get('/find-product-asins', findProductAsins);
-router.get('/graph-data', getGraphData);
-router.get('/calculate-seller-revenue', calculateSellerRevenue);
+router.get('/products', tokenChecker, getProducts);
+router.get('/search-product', tokenChecker, searchProducts);
+router.get('/product-offers', tokenChecker, getOffersOfProduct);
+router.get('/graph-image', tokenChecker, getGraphImage);
+router.get('/seller-info', tokenChecker, getSellerInfo);
+router.get('/find-product-asins', tokenChecker, findProductAsins);
+router.get('/graph-data', tokenChecker, getGraphData);
+router.get('/calculate-seller-revenue', tokenChecker, calculateSellerRevenue);
+router.get('/user-detail', tokenChecker, getUserDetail);
 
 module.exports = router;

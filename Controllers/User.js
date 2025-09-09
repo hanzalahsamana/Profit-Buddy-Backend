@@ -62,7 +62,7 @@ const login = async (req, res) => {
   }
 };
 
-const getMe = async (req, res) => {
+const getUserDetail = async (req, res) => {
   try {
     const userId = req.query.userId;
 
@@ -77,4 +77,4 @@ const getMe = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
-module.exports = { register, login, getMe };
+module.exports = { register, login, getUserDetail };
