@@ -14,6 +14,7 @@ const {
 const { gramsToPounds, gramsToOunce, mmToInch, mmToCm } = require('./Converter');
 const { buildFlatGraphData, extractGraphData, priceTransform, rankTransform, getAggregateHistoryDays } = require('./GraphCsvUtils');
 const { getFBAInboundPlacementFees, CalcShippingFee, calculateStorageFee } = require('./FeeCalc');
+const { HistoryModal } = require('../Models/HistoryModel');
 
 const extractNeededDataFromProduct = (product) => {
   if (!product) return {};
@@ -250,6 +251,34 @@ const extractGraphDataFromProduct = (product, days) => {
   return graphData;
 };
 
+const enrichHistoryDataInProducts = async (products, userId) => {
+  if (!products?.length || !userId) return products;
+
+  const asins = products.map((p) => p.asin);
+
+  
+  
+  const userHistories = await HistoryModal.find({
+    userRef: userId,
+    asin: { $in: asins },
+  }).lean();
+  
+  console.log(asins , ['d']);
+  
+
+  const historyMap = Object.fromEntries(userHistories.map((h) => [h.asin, h]));
+
+  const finalResult = products.map((product) => ({
+    ...product,
+    history: {
+      ...product?.history,
+      buyCost: historyMap[product.asin]?.buyCost || 0,
+    },
+  }));
+
+  return finalResult;
+};
+
 module.exports = {
   extractNeededDataFromProduct,
   extractOffersFromProduct,
@@ -257,4 +286,5 @@ module.exports = {
   extractNeededDataFromSeller,
   enrichSellersWithCategoryName,
   extractGraphDataFromProduct,
+  enrichHistoryDataInProducts,
 };

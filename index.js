@@ -3,7 +3,7 @@ require('dotenv').config({ quiet: true });
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mainRouter = require('./Routes/Routes.js');
-require("./Configurations/Database.js");
+require('./Configurations/Database.js');
 
 const app = express();
 

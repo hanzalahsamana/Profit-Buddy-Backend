@@ -43,7 +43,6 @@ const clampData = (data, days = '90' || 'all') => {
     // Convert to number of days
     formattedDays = Number(days);
   }
-  console.log(formattedDays);
 
   const now = new Date();
   const todayTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(); // local start-of-day
@@ -80,8 +79,6 @@ const clampData = (data, days = '90' || 'all') => {
     const before = [...normalized].reverse().find((d) => d.date < todayTs);
     if (before) normalized.push({ ...before, date: todayTs });
   }
-
-  console.log(normalized.at(-1));
 
   return normalized;
 };

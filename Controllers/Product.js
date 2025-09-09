@@ -1,11 +1,11 @@
 const { QUERY_FOR_FETCH_PRODUCT_DATA } = require('../Enums/KeepaConstant');
+const { HistoryModal } = require('../Models/HistoryModel');
 const { searchProductsFromKeepa, getProductsFromKeepa, findProductsAsinsFromKeepa } = require('../Services/Keepa.service');
-const { extractNeededDataFromProduct } = require('../Utils/ExtractNeededData');
+const { extractNeededDataFromProduct, enrichHistoryDataInProducts } = require('../Utils/ExtractNeededData');
 
 const getProducts = async (req, res) => {
   try {
-    // return res.status(200).json({ success: false, message: undefined });
-    const { asin } = req.query;
+    const { asin,userId } = req.query;
 
     if (!asin) {
       return res.status(400).json({ success: false, message: 'Asin is required' });
@@ -21,7 +21,9 @@ const getProducts = async (req, res) => {
       return extractNeededDataFromProduct(product);
     });
 
-    return res.status(200).json({ success: true, products: finalResult });
+    const enrichedWithHistory = await enrichHistoryDataInProducts(finalResult, userId);
+
+    return res.status(200).json({ success: true, products: enrichedWithHistory });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -29,7 +31,7 @@ const getProducts = async (req, res) => {
 
 const searchProducts = async (req, res) => {
   try {
-    const { searchTerm, page = 0 } = req.query;
+    const { searchTerm, page = 0 , userId } = req.query;
     if (!searchTerm) {
       return res.status(400).json({ success: false, message: 'Search Term is required' });
     }
@@ -50,7 +52,9 @@ const searchProducts = async (req, res) => {
       return extractNeededDataFromProduct(product);
     });
 
-    return res.status(200).json({ success: true, page: Number(page), products: finalResult });
+    const enrichedWithHistory = await enrichHistoryDataInProducts(finalResult, userId);
+
+    return res.status(200).json({ success: true, page: Number(page), products: enrichedWithHistory });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
