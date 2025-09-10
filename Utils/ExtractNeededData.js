@@ -127,7 +127,6 @@ const extractNeededDataFromHistoryProduct = (product) => {
 
   return extractedData;
 };
-
 const extractOffersFromProduct = (product) => {
   if (!product?.liveOffersOrder?.length || !product?.offers?.length) return {};
 
