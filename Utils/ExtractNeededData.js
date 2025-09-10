@@ -101,6 +101,33 @@ const extractNeededDataFromProduct = (product) => {
   return extractedData;
 };
 
+const extractNeededDataFromHistoryProduct = (product) => {
+  if (!product) return {};
+  const csv = product.csv || [];
+
+  const extractedData = {};
+
+  // Images
+  if (product.images?.length) {
+    extractedData.images = product.images.map((img) => `${AMAZON_IMAGE_BASE_URL}${img?.l || img?.m}`);
+  }
+
+  // Basic info
+  if (product.title) extractedData.title = product.title;
+  if (product.asin) extractedData.asin = product.asin;
+  if (product.categoryTree?.length) extractedData.category = product.categoryTree[0]?.name || 'Uncategorized';
+  if (product.brand) extractedData.brand = product.brand;
+
+  // Dimension
+  extractedData.dimension = {};
+  if (product.packageWidth) extractedData.dimension.width = `${mmToCm(product.packageWidth).toFixed(2)} cm (${mmToInch(product.packageWidth).toFixed(2)} in)`;
+  if (product.packageLength) extractedData.dimension.length = `${mmToCm(product.packageLength).toFixed(2)} cm (${mmToInch(product.packageLength).toFixed(2)} in)`;
+  if (product.packageHeight) extractedData.dimension.height = `${mmToCm(product.packageHeight).toFixed(2)} cm (${mmToInch(product.packageHeight).toFixed(2)} in)`;
+  if (product.packageWeight) extractedData.dimension.weight = `${gramsToPounds(product.packageWeight).toFixed(2)} lb (${gramsToOunce(product.packageWeight).toFixed(2)} oz)`;
+
+  return extractedData;
+};
+
 const extractOffersFromProduct = (product) => {
   if (!product?.liveOffersOrder?.length || !product?.offers?.length) return {};
 
@@ -256,15 +283,12 @@ const enrichHistoryDataInProducts = async (products, userId) => {
 
   const asins = products.map((p) => p.asin);
 
-  
-  
   const userHistories = await HistoryModal.find({
     userRef: userId,
     asin: { $in: asins },
   }).lean();
-  
-  console.log(asins , ['d']);
-  
+
+  console.log(asins, ['d']);
 
   const historyMap = Object.fromEntries(userHistories.map((h) => [h.asin, h]));
 
@@ -281,6 +305,7 @@ const enrichHistoryDataInProducts = async (products, userId) => {
 
 module.exports = {
   extractNeededDataFromProduct,
+  extractNeededDataFromHistoryProduct,
   extractOffersFromProduct,
   enrichOffersWithSeller,
   extractNeededDataFromSeller,
