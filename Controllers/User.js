@@ -23,7 +23,7 @@ const register = async (req, res) => {
     });
 
     const savedUser = await newUser.save();
-    const token = await generateJwtToken({ _id: savedUser._id });
+    const token = await generateJwtToken({ _id: savedUser._id, tokenVersion: savedUser.tokenVersion });
     savedUser.password = undefined;
 
     res.status(201).json({
@@ -42,6 +42,48 @@ const register = async (req, res) => {
   }
 };
 
+// const sendMagicLink = async (req, res) => {
+//   try {
+//     const { userId, purpose, newEmail } = req.body;
+
+//     if (!userId || !purpose) {
+//       return res.status(400).json({ message: 'Missing required fields' });
+//     }
+
+//     const user = await UserModal.findById(userId);
+//     if (!user) return res.status(404).json({ message: 'User not found' });
+
+//     const token = crypto.randomBytes(32).toString('hex');
+//     const expiry = new Date(Date.now() + 15 * 60 * 1000); // 15 min
+
+//     user.magicToken = token;
+//     user.magicTokenPurpose = purpose;
+//     user.magicTokenExpiry = expiry;
+//     if (purpose === 'change_email' && newEmail) {
+//       user.tempEmail = newEmail; // optional field to store pending email
+//     }
+//     await user.save();
+
+//     const magicLink = `${process.env.LIVE_DOMAIN}/verify?token=${token}&purpose=${purpose}`;
+
+//     await sendEmail(
+//       user.email,
+//       'Verify Your Action',
+//       `
+//       <p>Click below to verify:</p>
+//       <a href="${magicLink}" style="background:#000;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none">
+//         Verify Action
+//       </a>
+//     `
+//     );
+
+//     return res.status(200).json({ success: true, message: 'Magic link sent' });
+//   } catch (err) {
+//     console.error('sendMagicLink Error:', err);
+//     return res.status(500).json({ success: false, message: 'Failed to send magic link' });
+//   }
+// };
+
 const login = async (req, res) => {
   try {
     const { email, password } = req?.body || {};
@@ -57,7 +99,7 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    const token = await generateJwtToken({ _id: user._id });
+    const token = await generateJwtToken({ _id: user._id, tokenVersion: user.tokenVersion });
     user.password = undefined;
     return res.status(200).json({ token, user, message: 'Login successfully!' });
   } catch (error) {
@@ -205,7 +247,6 @@ const resetPassword = async (req, res) => {
       });
     }
 
-    // Optional: Add password strength validation
     if (newPassword.length < 6) {
       return res.status(400).json({
         success: false,
@@ -220,7 +261,6 @@ const resetPassword = async (req, res) => {
     }).select('+password +resetToken +resetTokenExpiry');
 
     if (!user) {
-      // Separate checks for more detailed response
       const emailExists = await UserModal.findOne({ email });
       if (!emailExists) {
         return res.status(404).json({
@@ -243,11 +283,11 @@ const resetPassword = async (req, res) => {
       });
     }
 
-    // Hash new password & clear reset token
     const hashedPassword = await generateHash(newPassword);
     user.password = hashedPassword;
     user.resetToken = null;
     user.resetTokenExpiry = null;
+    user.tokenVersion += 1;
     await user.save();
 
     return res.status(200).json({
@@ -264,4 +304,35 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getUserDetail, requestPasswordReset, verifyResetToken, resetPassword };
+const updateProfile = async (req, res) => {
+  console.log('wdicbsihd');
+
+  try {
+    const { userId } = req.query;
+    const { userName } = req.body || {};
+
+    let user = await UserModal.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    if (userName) user.userName = userName;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully.',
+      user,
+    });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Something went wrong while updating your profile.',
+      error: error,
+    });
+  }
+};
+
+module.exports = { register, login, getUserDetail, requestPasswordReset, verifyResetToken, resetPassword, updateProfile };
