@@ -5,7 +5,7 @@ const { extractNeededDataFromProduct, enrichHistoryDataInProducts } = require('.
 
 const getProducts = async (req, res) => {
   try {
-    const { asin,userId } = req.query;
+    const { asin, userId } = req.query;
 
     if (!asin) {
       return res.status(400).json({ success: false, message: 'Asin is required' });
@@ -25,13 +25,19 @@ const getProducts = async (req, res) => {
 
     return res.status(200).json({ success: true, products: enrichedWithHistory });
   } catch (error) {
+    if (error.message.includes('buffering timed out')) {
+      return res.status(503).json({
+        success: false,
+        message: 'Slow internet or database is unreachable. Please try again later.',
+      });
+    }
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
 const searchProducts = async (req, res) => {
   try {
-    const { searchTerm, page = 0 , userId } = req.query;
+    const { searchTerm, page = 0, userId } = req.query;
     if (!searchTerm) {
       return res.status(400).json({ success: false, message: 'Search Term is required' });
     }
@@ -56,6 +62,12 @@ const searchProducts = async (req, res) => {
 
     return res.status(200).json({ success: true, page: Number(page), products: enrichedWithHistory });
   } catch (error) {
+    if (error.message.includes('buffering timed out')) {
+      return res.status(503).json({
+        success: false,
+        message: 'Slow internet or database is unreachable. Please try again later.',
+      });
+    }
     return res.status(500).json({ success: false, message: error.message });
   }
 };

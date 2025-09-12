@@ -38,6 +38,12 @@ const getHistoryData = async (req, res) => {
     return res.json({ success: true, products: finalResult, totalCount });
   } catch (error) {
     console.error('getHistoryData error:', error);
+    if (error.message.includes('buffering timed out')) {
+      return res.status(503).json({
+        success: false,
+        message: 'Slow internet or database is unreachable. Please try again later.',
+      });
+    }
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
@@ -66,6 +72,12 @@ const upsertHistory = async (req, res) => {
     return res.json({ success: true, history });
   } catch (error) {
     console.error('upsertHistory error:', error);
+    if (error.message.includes('buffering timed out')) {
+      return res.status(503).json({
+        success: false,
+        message: 'Slow internet or database is unreachable. Please try again later.',
+      });
+    }
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
