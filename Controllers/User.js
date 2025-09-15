@@ -1,5 +1,7 @@
 const { UserModal } = require('../Models/UserModel');
 const { sendEmail } = require('../Services/Nodemailer.service');
+const { DeleteAccountVerificationTemplate } = require('../Templates/DeleteAccountVerificationTemplate');
+const { EmailVerificationTemplate } = require('../Templates/EmailVerificationTemplate');
 const { ForgotPasswordTemplate } = require('../Templates/ForgotPasswordTemplate');
 const { generateHash, compareHash } = require('../Utils/BCrypt');
 const { generateJwtToken } = require('../Utils/Jwt');
@@ -9,27 +11,64 @@ const register = async (req, res) => {
   const { email, password, terms } = req.body;
 
   try {
-    let user = await UserModal.findOne({ email });
-
-    if (user) {
-      return res.status(400).json({ message: 'User already exists.' });
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: 'Email and password are required.' });
     }
 
+    const normalizedEmail = email.toLowerCase();
+    let user = await UserModal.findOne({ email: normalizedEmail }).select('+password +verifyToken +verifyTokenExpiry');
+
     const hashedPassword = await generateHash(password, 10);
-    const newUser = new UserModal({
-      email,
+    const verifyToken = crypto.randomBytes(32).toString('hex');
+    const verifyTokenExpiry = Date.now() + 15 * 60 * 1000; // 15 min
+    const verifyLink = `${process.env.LIVE_DOMAIN}/verify?token=${verifyToken}`;
+
+    if (user) {
+      if (user.verified) {
+        return res.status(409).json({
+          success: false,
+          message: 'User with this email already exists. Please log in.',
+        });
+      }
+
+      const tokenExistsAndValid = user.verifyToken && user.verifyTokenExpiry && new Date(user.verifyTokenExpiry) > Date.now();
+
+      if (tokenExistsAndValid) {
+        const timeLeft = Math.ceil((new Date(user.verifyTokenExpiry) - Date.now()) / 60000);
+        return res.status(403).json({
+          success: false,
+          message: `Your email is not verified. A verification link was already sent. Please check your inbox or try again in ${timeLeft} minute(s).`,
+        });
+      }
+
+      user.verifyToken = verifyToken;
+      user.verifyTokenExpiry = verifyTokenExpiry;
+      user.verified = false;
+
+      await user.save();
+      await sendEmail(user.email, 'Verify Your Email Address', EmailVerificationTemplate(verifyLink));
+
+      return res.status(403).json({
+        success: true,
+        message: "Your email already exists but not verified, We've sent you a verification link. Please check your email (and spam folder).",
+      });
+    }
+
+    const newUser = await new UserModal({
+      email: normalizedEmail,
       password: hashedPassword,
       terms,
+      verifyToken,
+      verifyTokenExpiry,
+      verified: false,
     });
 
-    const savedUser = await newUser.save();
-    const token = await generateJwtToken({ _id: savedUser._id, tokenVersion: savedUser.tokenVersion });
-    savedUser.password = undefined;
+    await newUser.save();
+    await sendEmail(normalizedEmail, 'Verify Your Email Address', EmailVerificationTemplate(verifyLink));
 
-    res.status(201).json({
-      message: 'User registered successfully.',
-      user: savedUser,
-      token,
+    return res.status(201).json({
+      success: true,
+      message: "You've successfully registered. We've sent you an email verification link — please check your inbox (and spam folder).",
     });
   } catch (error) {
     console.error('Registration Error:', error);
@@ -38,72 +77,139 @@ const register = async (req, res) => {
       return res.status(400).json({ message: messages[0] });
     }
 
-    res.status(500).json({ message: 'Internal server error.' });
+    return res.status(500).json({ message: 'Internal server error.' });
   }
 };
 
-// const sendMagicLink = async (req, res) => {
-//   try {
-//     const { userId, purpose, newEmail } = req.body;
+const verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.body || {};
+    console.log(req.body);
 
-//     if (!userId || !purpose) {
-//       return res.status(400).json({ message: 'Missing required fields' });
-//     }
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: 'Verification token is missing. Please use the latest link sent to your email.',
+      });
+    }
 
-//     const user = await UserModal.findById(userId);
-//     if (!user) return res.status(404).json({ message: 'User not found' });
+    // Find user by token only (safer)
+    const user = await UserModal.findOne({ verifyToken: token }).select('+verifyToken +verifyTokenExpiry');
 
-//     const token = crypto.randomBytes(32).toString('hex');
-//     const expiry = new Date(Date.now() + 15 * 60 * 1000); // 15 min
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired verification link. Please request a new one.',
+      });
+    }
 
-//     user.magicToken = token;
-//     user.magicTokenPurpose = purpose;
-//     user.magicTokenExpiry = expiry;
-//     if (purpose === 'change_email' && newEmail) {
-//       user.tempEmail = newEmail; // optional field to store pending email
-//     }
-//     await user.save();
+    // Check expiry
+    if (!user.verifyTokenExpiry || user.verifyTokenExpiry < Date.now()) {
+      return res.status(410).json({
+        success: false,
+        message: 'Your verification link has expired. Please request a new one.',
+      });
+    }
 
-//     const magicLink = `${process.env.LIVE_DOMAIN}/verify?token=${token}&purpose=${purpose}`;
+    // If already verified
+    if (user.verified) {
+      return res.status(200).json({
+        success: true,
+        message: 'Your email is already verified. You can log in.',
+      });
+    }
 
-//     await sendEmail(
-//       user.email,
-//       'Verify Your Action',
-//       `
-//       <p>Click below to verify:</p>
-//       <a href="${magicLink}" style="background:#000;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none">
-//         Verify Action
-//       </a>
-//     `
-//     );
+    // Mark verified and clear token
+    user.verified = true;
+    user.verifyToken = null;
+    user.verifyTokenExpiry = null;
 
-//     return res.status(200).json({ success: true, message: 'Magic link sent' });
-//   } catch (err) {
-//     console.error('sendMagicLink Error:', err);
-//     return res.status(500).json({ success: false, message: 'Failed to send magic link' });
-//   }
-// };
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Your email has been verified successfully. You can now log in with your email.',
+    });
+  } catch (error) {
+    console.error('Error verifying email:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Something went wrong while verifying your email. Please try again later.',
+    });
+  }
+};
 
 const login = async (req, res) => {
   try {
     const { email, password } = req?.body || {};
-    const user = await UserModal.findOne({ email }).select('+password');
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: !email ? 'Email is required.' : 'Password is required.',
+      });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // password and tokens are select:false in schema, so explicitly select them
+    const user = await UserModal.findOne({ email: normalizedEmail }).select('+password +verifyToken +verifyTokenExpiry');
 
     if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ success: false, message: 'Invalid email or password.' });
     }
 
     const isPasswordValid = await compareHash(password, user.password);
-
     if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ success: false, message: 'Invalid email or password.' });
     }
 
-    const token = await generateJwtToken({ _id: user._id, tokenVersion: user.tokenVersion });
+    // If not verified — send verification link only if token missing or expired
+    if (!user.verified) {
+      const tokenExistsAndValid = user.verifyToken && user.verifyTokenExpiry && new Date(user.verifyTokenExpiry) > Date.now();
+
+      if (tokenExistsAndValid) {
+        const timeLeft = Math.ceil((new Date(user.verifyTokenExpiry) - Date.now()) / 60000);
+        return res.status(403).json({
+          success: false,
+          message: `Your email is not verified. A verification link was already sent. Please check your inbox or try again in ${timeLeft} minute(s).`,
+        });
+      }
+
+      // Generate new token
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+      user.verifyToken = token;
+      user.verifyTokenExpiry = expiry;
+
+      await user.save();
+
+      const verifyLink = `${process.env.LIVE_DOMAIN}/verify?token=${token}`;
+      await sendEmail(user.email, 'Verify Your Email Address', EmailVerificationTemplate(verifyLink));
+
+      return res.status(403).json({
+        success: false,
+        message: 'Your email is not verified. A new verification link has been sent to your email address.',
+      });
+    }
+
+    // Verified -> generate JWT and return
+    const jwt = await generateJwtToken({ _id: user._id, tokenVersion: user.tokenVersion });
+
+    // don't return sensitive fields
     user.password = undefined;
-    return res.status(200).json({ token, user, message: 'Login successfully!' });
+    user.verifyToken = undefined;
+    user.verifyTokenExpiry = undefined;
+
+    return res.status(200).json({
+      success: true,
+      token: jwt,
+      user,
+      message: 'Login successful!',
+    });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    console.error('Login error:', error);
+    return res.status(500).json({ success: false, message: 'Something went wrong. Please try again later.' });
   }
 };
 
@@ -152,13 +258,13 @@ const requestPasswordReset = async (req, res) => {
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetTokenExpiry = Date.now() + 15 * 60 * 1000; // 15 min
 
-    user.resetToken = resetToken;
-    user.resetTokenExpiry = resetTokenExpiry;
-    await user.save();
-
     const resetLink = `${process.env.LIVE_DOMAIN}/reset-password?email=${encodeURIComponent(user.email)}&token=${resetToken}`;
 
     await sendEmail(user.email, 'Reset Your Profit Buddy Password', ForgotPasswordTemplate(resetLink));
+
+    user.resetToken = resetToken;
+    user.resetTokenExpiry = resetTokenExpiry;
+    await user.save();
 
     return res.status(200).json({
       success: true,
@@ -335,4 +441,121 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getUserDetail, requestPasswordReset, verifyResetToken, resetPassword, updateProfile };
+const requestDeleteAccount = async (req, res) => {
+  try {
+    const { userId } = req.query || {};
+
+    const user = await UserModal.findById(userId).select('+deleteToken +deleteTokenExpiry');
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'No account found with this ID.',
+      });
+    }
+
+    // If token already exists and is still valid → block spamming
+    if (user.deleteToken && user.deleteTokenExpiry && user.deleteTokenExpiry > Date.now()) {
+      const timeLeft = Math.ceil((user.deleteTokenExpiry - Date.now()) / 60000);
+      return res.status(429).json({
+        success: false,
+        message: `A delete account link was already sent. Please check your inbox or try again in ${timeLeft} minute(s).`,
+      });
+    }
+
+    // Generate new delete token
+    const deleteToken = crypto.randomBytes(32).toString('hex');
+    const deleteTokenExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
+
+    const deleteLink = `${process.env.LIVE_DOMAIN}/delete-account?token=${deleteToken}`;
+
+    // Send email
+    await sendEmail(user.email, 'Confirm Your Account Deletion', DeleteAccountVerificationTemplate(deleteLink));
+
+    // Save token + expiry
+    user.deleteToken = deleteToken;
+    user.deleteTokenExpiry = deleteTokenExpiry;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "We've sent you a delete account confirmation link! Please check your email (and spam folder).",
+    });
+  } catch (error) {
+    console.error('Error in requestDeleteAccount:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Something went wrong while processing your request. Please try again later.',
+      error: error.message,
+    });
+  }
+};
+
+const deleteAccount = async (req, res) => {
+  try {
+    const { token } = req.body || {};
+    const { userId } = req.query || {};
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: 'Delete token is missing. Please use the latest link sent to your email.',
+      });
+    }
+
+    const user = await UserModal.findOne({
+      _id: userId,
+      deleteToken: token,
+      deleteTokenExpiry: { $gt: Date.now() },
+    }).select('+deleteToken +deleteTokenExpiry');
+
+    if (!user) {
+      const emailExists = await UserModal.findById(userId);
+      if (!emailExists) {
+        return res.status(404).json({
+          success: false,
+          message: "We couldn't find any account. Please check the email or sign up for a new account.",
+        });
+      }
+
+      const tokenExists = await UserModal.findOne({ _id: userId, deleteToken: token }).select('+deleteToken +deleteTokenExpiry');
+      if (tokenExists) {
+        return res.status(400).json({
+          success: false,
+          message: 'Your delete link has expired. Please request a new one.',
+        });
+      }
+
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid delete token. Please use the latest delete account email you received.',
+      });
+    }
+
+    await UserModal.deleteOne({ _id: userId });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Your account has been permanently deleted. We’re sorry to see you go.',
+    });
+  } catch (error) {
+    console.error('Error in deleteAccount:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Something went wrong while deleting your account. Please try again later.',
+      error: error.message,
+    });
+  }
+};
+
+module.exports = {
+  register,
+  verifyEmail,
+  login,
+  getUserDetail,
+  requestPasswordReset,
+  verifyResetToken,
+  resetPassword,
+  updateProfile,
+  requestDeleteAccount,
+  deleteAccount,
+};

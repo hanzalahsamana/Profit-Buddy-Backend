@@ -23,6 +23,10 @@ const tokenChecker = async (req, res, next) => {
 
     const user = await UserModal.findById(decoded._id);
 
+    if (!user) {
+      return res.status(404).json({ message: 'User not found please signup first.' });
+    }
+
     if (!user || user.tokenVersion !== decoded.tokenVersion) {
       return res.status(401).json({ message: 'Session expired. Please login again.' });
     }
