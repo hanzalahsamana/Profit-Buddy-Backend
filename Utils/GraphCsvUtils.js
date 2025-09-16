@@ -87,31 +87,31 @@ const forwardFillSeries = (result, keys, fillInitialWithFirst = false) => {
   if (!Array.isArray(result) || result.length === 0) return;
 
   // 1) Fill leading nulls from the first forward non-null (only if requested)
-  if (fillInitialWithFirst) {
-    keys.forEach((k) => {
-      // find first non-null value for this key
-      let firstFound = null;
-      for (let i = 0; i < result.length; i++) {
-        const v = result[i][k];
-        if (v !== null && v !== undefined) {
-          firstFound = v;
-          break;
-        }
-      }
+  // if (fillInitialWithFirst) {
+  //   keys.forEach((k) => {
+  //     // find first non-null value for this key
+  //     let firstFound = null;
+  //     for (let i = 0; i < result.length; i++) {
+  //       const v = result[i][k];
+  //       if (v !== null && v !== undefined) {
+  //         firstFound = v;
+  //         break;
+  //       }
+  //     }
 
-      // if found, fill all leading null/undefined entries up to the first real value
-      if (firstFound !== null) {
-        for (let i = 0; i < result.length; i++) {
-          if (result[i][k] === null || result[i][k] === undefined) {
-            result[i][k] = firstFound;
-          } else {
-            // once we hit a real value, stop filling leading section
-            break;
-          }
-        }
-      }
-    });
-  }
+  //     // if found, fill all leading null/undefined entries up to the first real value
+  //     if (firstFound !== null) {
+  //       for (let i = 0; i < result.length; i++) {
+  //         if (result[i][k] === null || result[i][k] === undefined) {
+  //           result[i][k] = firstFound;
+  //         } else {
+  //           // once we hit a real value, stop filling leading section
+  //           break;
+  //         }
+  //       }
+  //     }
+  //   });
+  // }
 
   // 2) Backward fill the rest of the series (propagate last seen value forward)
   keys.forEach((k) => {

@@ -9,7 +9,7 @@ const ForgotPasswordTemplate = (resetLink = '') => {
         body {
             background-color: #F8F9FC;
             color: #666666;
-            font-family: 'Google Sans', sans-serif;
+            font-family: 'Google Sans', 'sans-serif' !important;
             margin: 0;
             padding: 0;
             width: 100%;
