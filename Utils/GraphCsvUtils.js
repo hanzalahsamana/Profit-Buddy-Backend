@@ -33,21 +33,14 @@ const rankTransform = (v) => {
   return Number.isNaN(n) ? null : n;
 };
 
-const clampData = (data, days = '90' || 'all') => {
-  let formattedDays;
+const clampData = (data, days = '90') => {
 
-  if (days === 'all') {
-    // Keep all data
-    formattedDays = 'all';
-  } else {
-    // Convert to number of days
-    formattedDays = Number(days);
-  }
+  let formattedDays = Number(days);
 
   const now = new Date();
   const todayTs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(); // local start-of-day
   let startDateTs = null;
-  if (formattedDays && formattedDays !== 'all') {
+  if (formattedDays) {
     const sd = new Date(now);
     sd.setDate(sd.getDate() - formattedDays);
     startDateTs = new Date(sd.getFullYear(), sd.getMonth(), sd.getDate()).getTime();
@@ -187,7 +180,7 @@ const extractGraphData = (csv, config) => {
   return graphData;
 };
 
-const getAggregateHistoryDays = (csv) =>{
+const getAggregateHistoryDays = (csv) => {
   const indexes = [
     { index: AMAZON_PRICE_HISTORY_CONSTANT, step: 2 },
     { index: BUYBOX_PRICE_HISTORY_CONSTANT, step: 3 },
@@ -211,8 +204,7 @@ const getAggregateHistoryDays = (csv) =>{
 
   if (earliest === Infinity || latest === -Infinity) return 0;
 
-
   const diffDays = Math.floor((latest - earliest) / (1000 * 60 * 60 * 24));
   return diffDays + 1;
-}
-module.exports = { extractGraphData, buildFlatGraphData, priceTransform, rankTransform, keepaToMs , getAggregateHistoryDays };
+};
+module.exports = { extractGraphData, buildFlatGraphData, priceTransform, rankTransform, keepaToMs, getAggregateHistoryDays };

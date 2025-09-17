@@ -47,6 +47,7 @@ const extractNeededDataFromProduct = (product) => {
   const amazonPriceHistory = csv[AMAZON_PRICE_HISTORY_CONSTANT] || [];
   const listPriceHistory = csv[LIST_PRICE_HISTORY_CONSTANT] || [];
   const salesRankHistory = csv[SALES_RANK_HISTORY_CONSTANT] || [];
+  const offerCountHistory = csv[OFFER_COUNT_HISTORY_CONSTANT] || [];
 
   extractedData.info = {};
 
@@ -67,10 +68,12 @@ const extractNeededDataFromProduct = (product) => {
   if (amazonPriceHistory.length) extractedData.info.amazonPrice = amazonPriceHistory.at(-1) / 100 || 0;
   if (buyboxHistory.length) extractedData.info.buybox = buyboxHistory.at(-2) / 100 || 0;
   if (listPriceHistory.length) extractedData.info.listPrice = listPriceHistory.at(-1) / 100 || 0;
+  if (newPriceHistory.length) extractedData.info.newPrice = newPriceHistory.at(-1) / 100 || 0;
   if (salesRankHistory.length) extractedData.info.sellRank = salesRankHistory.at(-1) || 0;
+  if (offerCountHistory.length) extractedData.info.offerCount = offerCountHistory.at(-1) || 0;
   if (product.monthlySold) extractedData.info.monthlySold = product.monthlySold;
   if (product.competitivePriceThreshold) extractedData.info.competitivePriceThreshold = product.competitivePriceThreshold / 100;
-
+  
   // Dimension
   extractedData.dimension = {};
   if (product.packageWidth) extractedData.dimension.width = `${mmToCm(product.packageWidth).toFixed(2)} cm (${mmToInch(product.packageWidth).toFixed(2)} in)`;
