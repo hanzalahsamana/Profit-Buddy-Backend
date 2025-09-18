@@ -3,7 +3,8 @@ require('dotenv').config({ quiet: true });
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mainRouter = require('./Routes/Routes.js');
-require('./Configurations/Database.js');
+const connectDB = require('./Configurations/Database.js');
+// require('./Configurations/Database.js');
 
 const app = express();
 
@@ -24,7 +25,7 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
   res.send('Server online and ready for lift-off!');
 });
-
+connectDB()
 app.use('/api/v1', mainRouter);
 
 if (process.env.NODE_ENV !== 'production') {
