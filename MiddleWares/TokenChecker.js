@@ -37,13 +37,13 @@ const tokenChecker = async (req, res, next) => {
     if (err.name === 'TokenExpiredError') {
       return res.status(401).json({ message: 'Session expired. Please login again.' });
     }
-    if (err.message.includes('buffering timed out')) {
+    if (err?.message.includes('buffering timed out')) {
       return res.status(503).json({
         success: false,
         message: 'Slow internet or database is unreachable. Please try again later.',
       });
     }
-    return res.status(403).json({ message: 'Invalid token.' });
+    return res.status(403).json({ message: 'Error occuring while verifying your session.' });
   }
 };
 

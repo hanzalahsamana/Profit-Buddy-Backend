@@ -73,7 +73,7 @@ const extractNeededDataFromProduct = (product) => {
   if (offerCountHistory.length) extractedData.info.offerCount = offerCountHistory.at(-1) || 0;
   if (product.monthlySold) extractedData.info.monthlySold = product.monthlySold;
   if (product.competitivePriceThreshold) extractedData.info.competitivePriceThreshold = product.competitivePriceThreshold / 100;
-  
+
   // Dimension
   extractedData.dimension = {};
   if (product.packageWidth) extractedData.dimension.width = `${mmToCm(product.packageWidth).toFixed(2)} cm (${mmToInch(product.packageWidth).toFixed(2)} in)`;
@@ -144,9 +144,12 @@ const extractOffersFromProduct = (product) => {
 
       let seller = offer.isAmazon ? 'AMZ' : offer.isFBA ? 'FBA' : 'FBM';
 
+      const shippingFee = CalcShippingFee(product?.packageWeight ?? product?.itemWeight);
+      const finalPrice = seller === 'FBM' ? price + shippingFee : price;
+
       return {
         stock,
-        price,
+        price: finalPrice,
         seller,
         sellerId: offer.sellerId,
         condition: offer.condition,
