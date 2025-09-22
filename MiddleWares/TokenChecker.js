@@ -27,6 +27,10 @@ const tokenChecker = async (req, res, next) => {
       return res.status(404).json({ message: 'User not found please signup first.' });
     }
 
+    if (!user.verified) {
+      return res.status(401).json({ message: 'Your email is not verified, Please verify first.' });
+    }
+
     if (!user || user.tokenVersion !== decoded.tokenVersion) {
       return res.status(401).json({ message: 'Session expired. Please login again.' });
     }

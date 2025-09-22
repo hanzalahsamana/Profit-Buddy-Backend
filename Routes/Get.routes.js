@@ -7,6 +7,7 @@ const { getSellerInfo, calculateSellerRevenue } = require('../Controllers/Seller
 const { getUserDetail } = require('../Controllers/User');
 const tokenChecker = require('../MiddleWares/TokenChecker');
 const { getHistoryData } = require('../Controllers/History');
+const { aiChat } = require('../Controllers/AIChat');
 
 router.get('/products', tokenChecker, getProducts);
 router.get('/search-product', tokenChecker, searchProducts);
@@ -18,5 +19,6 @@ router.get('/graph-data', tokenChecker, getGraphData);
 router.get('/calculate-seller-revenue', tokenChecker, calculateSellerRevenue);
 router.get('/user-detail', tokenChecker, getUserDetail);
 router.get('/history', tokenChecker, getHistoryData);
+router.get('/ai-chat', tokenChecker, aiChat);
 
 module.exports = router;

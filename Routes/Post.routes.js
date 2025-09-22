@@ -3,7 +3,7 @@ const { login, register, requestPasswordReset, verifyResetToken, resetPassword, 
 const { userLoginValidate, userRegisterValidate } = require('../MiddleWares/UserValidation');
 const tokenChecker = require('../MiddleWares/TokenChecker');
 const { upsertHistory } = require('../Controllers/History');
-const { createSubscription } = require('../Controllers/Payment');
+const { stripeWebhook, createSubscription, createCustomer } = require('../Controllers/Payment');
 const router = express.Router();
 
 router.post('/register', userRegisterValidate, register);
@@ -16,6 +16,11 @@ router.post('/reset-password', resetPassword);
 router.post('/request-delete-account', tokenChecker, requestDeleteAccount);
 router.post('/delete-account', tokenChecker, deleteAccount);
 router.post('/update-profile', tokenChecker, updateProfile);
+
+router.post('/create-customer', createCustomer);
 router.post('/create-subscription', createSubscription);
+
+// Stripe webhook (⚠️ must use raw body for signature verification)
+router.post('/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 
 module.exports = router;

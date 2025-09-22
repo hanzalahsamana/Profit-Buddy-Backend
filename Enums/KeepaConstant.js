@@ -30,7 +30,7 @@ const QUERY_FOR_FETCH_PRODUCT_DATA = {
 
 // Query For Fetch Offer Data From Keepa
 const QUERY_FOR_FETCH_OFFER_DATA = {
-  offers: 20,
+  offers: 100,
   'only-live-offers': 1,
   stock: 1,
 };

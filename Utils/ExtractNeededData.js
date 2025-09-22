@@ -96,6 +96,7 @@ const extractNeededDataFromProduct = (product) => {
     isDangerous: product?.isDangerous || false,
   });
 
+  // Graph History Length
   extractedData.historyLength = getAggregateHistoryDays(csv);
 
   // Graph data

@@ -31,6 +31,16 @@ const userSchema = new Schema(
       default: false,
       required: true,
     },
+    plan: {
+      type: String,
+      default: null,
+      required: false,
+    },
+
+    currentSubscription: { type: mongoose.Schema.Types.ObjectId, ref: 'subscription', default: null },
+
+    // Stripe
+    stripeCustomerId: { type: String, default: null, select: false },
 
     // Verifications Token
     verifyToken: { type: String, default: null, select: false },

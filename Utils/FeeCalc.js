@@ -15,7 +15,7 @@ const getFBAInboundPlacementFees = (width, length, height, weight) => {
       optimized: defaultFees?.optimized ?? 0,
     };
   }
-
+  
   const weightLb = OunceToPound(convertedWeight);
   const dims = [convertedWidth, convertedLength, convertedHeight].sort((a, b) => b - a);
 
