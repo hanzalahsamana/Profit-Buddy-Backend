@@ -93,7 +93,6 @@ const verifyEmail = async (req, res) => {
       });
     }
 
-    // Find user by token only (safer)
     const user = await UserModal.findOne({ verifyToken: token }).select('+verifyToken +verifyTokenExpiry');
 
     if (!user) {
@@ -103,7 +102,6 @@ const verifyEmail = async (req, res) => {
       });
     }
 
-    // Check expiry
     if (!user.verifyTokenExpiry || user.verifyTokenExpiry < Date.now()) {
       return res.status(410).json({
         success: false,
@@ -111,7 +109,6 @@ const verifyEmail = async (req, res) => {
       });
     }
 
-    // If already verified
     if (user.verified) {
       return res.status(200).json({
         success: true,
@@ -119,7 +116,6 @@ const verifyEmail = async (req, res) => {
       });
     }
 
-    // Mark verified and clear token
     user.verified = true;
     user.verifyToken = null;
     user.verifyTokenExpiry = null;
@@ -152,8 +148,7 @@ const login = async (req, res) => {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // password and tokens are select:false in schema, so explicitly select them
-    const user = await UserModal.findOne({ email: normalizedEmail }).select('+password +verifyToken +verifyTokenExpiry');
+    const user = await UserModal.findOne({ email: normalizedEmail }).select('+password +verifyToken +verifyTokenExpiry').populate('currentSubscription');;
 
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid email or password.' });
@@ -164,7 +159,6 @@ const login = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid email or password.' });
     }
 
-    // If not verified — send verification link only if token missing or expired
     if (!user.verified) {
       const tokenExistsAndValid = user.verifyToken && user.verifyTokenExpiry && new Date(user.verifyTokenExpiry) > Date.now();
 
@@ -176,9 +170,8 @@ const login = async (req, res) => {
         });
       }
 
-      // Generate new token
       const token = crypto.randomBytes(32).toString('hex');
-      const expiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+      const expiry = new Date(Date.now() + 15 * 60 * 1000);
       user.verifyToken = token;
       user.verifyTokenExpiry = expiry;
 
@@ -193,10 +186,8 @@ const login = async (req, res) => {
       });
     }
 
-    // Verified -> generate JWT and return
     const jwt = await generateJwtToken({ _id: user._id, tokenVersion: user.tokenVersion });
 
-    // don't return sensitive fields
     user.password = undefined;
     user.verifyToken = undefined;
     user.verifyTokenExpiry = undefined;
@@ -217,7 +208,7 @@ const getUserDetail = async (req, res) => {
   try {
     const userId = req.query.userId;
 
-    const user = await UserModal.findById(userId).select('-password');
+    const user = await UserModal.findById(userId).select('-password').populate('currentSubscription');
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
