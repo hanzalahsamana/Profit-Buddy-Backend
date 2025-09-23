@@ -17,6 +17,7 @@ const createCustomer = async (req, res) => {
   }
 };
 
+
 const createSubscription = async (req, res) => {
   try {
     const { paymentMethodId, planName } = req.body;
