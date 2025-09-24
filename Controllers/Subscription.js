@@ -1,48 +1,77 @@
+const { DEFAULT_SUBSCRIPTION_COUPON } = require('../Enums/OurConstant');
 const { PRICE_IDS } = require('../Enums/StripeConstant');
 const { SubscriptionModel } = require('../Models/SubscriptionModel');
 const { UserModal } = require('../Models/UserModel');
 const { createStripeCustomer, createStripeSubscription, attachPaymentMethodToStripeCustomer, cancelStripeSubscription } = require('../Services/Stripe.service');
+const { getDateAfterMonths } = require('../Utils/Converter');
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const createSubscription = async (req, res) => {
   try {
-    const { planName } = req.body;
+    const { planName, couponCode } = req.body;
     const { userId } = req.query;
+
+    const user = await UserModal.findById(userId);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    // ✅ Check existing subscription (cancel if needed before applying coupon)
+    if (user.currentSubscription) {
+      const existingSubDoc = await SubscriptionModel.findById(user.currentSubscription).select('+stripeSubscriptionId');
+      if (existingSubDoc?.stripeSubscriptionId) {
+        await stripe.subscriptions.update(existingSubDoc.stripeSubscriptionId, { cancel_at_period_end: true });
+        existingSubDoc.status = 'canceled';
+        await existingSubDoc.save();
+      }
+    }
+
+    // ✅ Coupon Flow
+    if (couponCode) {
+      const coupon = DEFAULT_SUBSCRIPTION_COUPON?.[couponCode] || null;
+      if (!coupon) {
+        return res.status(400).json({
+          success: false,
+          message: 'The coupon code you entered is either invalid, expired, or not applicable. Please double-check the code or try a different one.',
+        });
+      }
+
+      const startDate = new Date();
+      const endDate = getDateAfterMonths(coupon?.durationMonths || 1);
+
+      const newSubscriptionData = {
+        planName: coupon.planName || planName,
+        status: 'active',
+        subscriptionType: 'coupon',
+        currentPeriodStart: startDate,
+        currentPeriodEnd: endDate,
+        userRef: user._id,
+      };
+
+      const subscriptionDoc = await SubscriptionModel.findOneAndUpdate({ userRef: user._id }, newSubscriptionData, { new: true, upsert: true });
+
+      user.currentSubscription = subscriptionDoc._id;
+      user.plan = coupon.planName || planName;
+      await user.save();
+
+      return res.json({
+        success: true,
+        message: `Free subscription activated via coupon: ${couponCode}`,
+        subscription: subscriptionDoc,
+      });
+    }
 
     if (!PRICE_IDS[planName]) {
       return res.status(400).json({ success: false, message: 'Invalid plan selected' });
     }
 
-    const user = await UserModal.findById(userId);
-    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
-
-    // ✅ Check for existing active subscription
-    if (user.currentSubscription) {
-      const existingSubDoc = await SubscriptionModel.findById(user.currentSubscription).select('+stripeCustomerId +stripeSubscriptionId');
-
-      if (existingSubDoc) {
-        const stripeSub = await stripe.subscriptions.retrieve(existingSubDoc.stripeSubscriptionId);
-        if (stripeSub.status === 'active') {
-          return res.status(400).json({
-            success: false,
-            message: `Cancel your existing subscription before selecting ${planName} plan.`,
-          });
-        }
-      }
-    }
-
-    // ✅ Create Stripe Customer if not exists
     const customerId = user.stripeCustomerId || (await createStripeCustomer({ email: user.email }))?.id;
+
     if (!user.stripeCustomerId) {
       user.stripeCustomerId = customerId;
       await user.save();
     }
 
-    // ✅ Create Stripe Subscription & get subscription + clientSecret
-    const { subscription, clientSecret } = await createStripeSubscription(customerId, PRICE_IDS[planName]);
-
-    console.log(clientSecret, '♀️♀️');
+    const { subscription, clientSecret, summary } = await createStripeSubscription(customerId, PRICE_IDS[planName]);
 
     if (!clientSecret) {
       return res.status(400).json({
@@ -51,25 +80,18 @@ const createSubscription = async (req, res) => {
       });
     }
 
-    const unixToDateOrNull = (sec) => {
-      if (sec === undefined || sec === null) return null;
-      const n = Number(sec);
-      if (!Number.isFinite(n)) return null;
-      return new Date(n * 1000);
-    };
-
-    // ✅ Save subscription in DB (update if exists)
     const newSubscriptionData = {
       planName,
-      status: 'inActive',
+      status: 'incomplete',
+      subscriptionType: 'stripe',
       stripeCustomerId: customerId,
       stripeSubscriptionId: subscription.id,
-      currentPeriodStart: subscription?.items?.data?.current_period_start,
-      currentPeriodEnd: subscription?.items?.data?.current_period_end,
+      currentPeriodStart: summary?.startDate,
+      currentPeriodEnd: summary?.endDate,
       userRef: user._id,
     };
 
-    let subscriptionDoc = await SubscriptionModel.findOneAndUpdate({ userRef: user._id }, newSubscriptionData, { new: true, upsert: true });
+    const subscriptionDoc = await SubscriptionModel.findOneAndUpdate({ userRef: user._id }, newSubscriptionData, { new: true, upsert: true });
 
     user.currentSubscription = subscriptionDoc._id;
     user.plan = planName;
@@ -79,6 +101,7 @@ const createSubscription = async (req, res) => {
       success: true,
       clientSecret,
       subscriptionId: subscription.id,
+      summary: summary,
     });
   } catch (err) {
     console.error('Stripe subscription error:', err);
@@ -94,46 +117,48 @@ const cancelSubscription = async (req, res) => {
       return res.status(400).json({ success: false, message: 'User ID is required.' });
     }
 
-    // Fetch subscription with Stripe IDs
     const subscription = await SubscriptionModel.findOne({ userRef: userId }).select('+stripeCustomerId +stripeSubscriptionId');
 
-    if (!subscription || !subscription.stripeSubscriptionId) {
+    if (!subscription) {
       return res.status(404).json({ success: false, message: 'No subscription found for this user.' });
     }
 
-    // Retrieve subscription status from Stripe
-    const stripeSub = await stripe.subscriptions.retrieve(subscription.stripeSubscriptionId);
+    if (subscription.subscriptionType === 'coupon') {
+      subscription.status = 'canceled';
+      subscription.currentPeriodEnd = new Date();
+    } else {
+      if (!subscription.stripeSubscriptionId) {
+        return res.status(404).json({ success: false, message: 'No subscription found for this user.' });
+      }
+      const stripeSub = await stripe.subscriptions.retrieve(subscription.stripeSubscriptionId);
 
-    // Check if subscription is already inactive
-    if (!['active', 'past_due'].includes(stripeSub.status)) {
-      return res.status(400).json({
-        success: false,
-        message: `Cannot cancel subscription because it is currently "${stripeSub.status}".`,
-      });
+      if (!['active', 'past_due'].includes(stripeSub.status)) {
+        return res.status(400).json({
+          success: false,
+          message: `Cannot cancel subscription because it is currently "${stripeSub.status}".`,
+        });
+      }
+
+      let stripeResponse;
+      try {
+        stripeResponse = await cancelStripeSubscription(subscription.stripeSubscriptionId);
+      } catch (stripeErr) {
+        console.error('Stripe subscription cancel error:', stripeErr);
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to cancel subscription on Stripe. Please try again.',
+          error: stripeErr.message,
+        });
+      }
+
+      subscription.status = 'canceled';
+      subscription.currentPeriodEnd = new Date();
+      await subscription.save();
     }
-
-    // Cancel subscription on Stripe (at period end)
-    let stripeResponse;
-    try {
-      stripeResponse = await cancelStripeSubscription(subscription.stripeSubscriptionId);
-    } catch (stripeErr) {
-      console.error('Stripe subscription cancel error:', stripeErr);
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to cancel subscription on Stripe. Please try again.',
-        error: stripeErr.message,
-      });
-    }
-
-    // Update subscription in DB (do not delete)
-    subscription.status = 'canceled';
-    subscription.canceledAt = new Date(); // optional timestamp
-    subscription.stripeData = stripeResponse; // save Stripe response if needed
-    await subscription.save();
 
     return res.status(200).json({
       success: true,
-      message: 'Subscription successfully canceled. It will remain active until the period ends.',
+      message: 'Subscription successfully canceled.',
       subscription: subscription,
     });
   } catch (err) {

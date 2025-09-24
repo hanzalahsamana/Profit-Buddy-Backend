@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mainRouter = require('./Routes/Routes.js');
 const connectDB = require('./Configurations/Database.js');
+const { webHooks } = require('./Webhooks/Stirpe.js');
 // require('./Configurations/Database.js');
 
 const app = express();
@@ -20,12 +21,14 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
+app.post('/api/v1/post/webhook', express.raw({ type: 'application/json' }), webHooks);
+
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
   res.send('Server online and ready for lift-off!');
 });
-connectDB()
+connectDB();
 app.use('/api/v1', mainRouter);
 
 if (process.env.NODE_ENV !== 'production') {

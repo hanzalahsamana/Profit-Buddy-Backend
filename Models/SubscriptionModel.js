@@ -12,13 +12,17 @@ const subscriptionSchema = new Schema(
       enum: ['incomplete', 'active', 'canceled', 'past_due', 'unpaid'],
       default: 'incomplete',
     },
-
+    subscriptionType: {
+      type: String,
+      enum: ['stripe', 'coupon'],
+      required: true,
+    },
     currentPeriodStart: { type: Date },
     currentPeriodEnd: { type: Date },
     stripeCustomerId: { type: String, default: null, select: false },
     stripeSubscriptionId: { type: String, default: null, select: false },
 
-    userRef: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true, unique: true },
+    userRef: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
   },
   {
     timestamps: true,

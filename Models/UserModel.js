@@ -37,7 +37,7 @@ const userSchema = new Schema(
       required: false,
     },
 
-    currentSubscription: { type: mongoose.Schema.Types.ObjectId, ref: 'subscription', default: null },
+    currentSubscription: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription', default: null },
 
     // Stripe
     stripeCustomerId: { type: String, default: null, select: false },

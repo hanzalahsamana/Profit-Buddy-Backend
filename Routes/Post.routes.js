@@ -4,7 +4,6 @@ const { userLoginValidate, userRegisterValidate } = require('../MiddleWares/User
 const tokenChecker = require('../MiddleWares/TokenChecker');
 const { upsertHistory } = require('../Controllers/History');
 const { createSubscription, cancelSubscription } = require('../Controllers/Subscription');
-const { webHooks } = require('../Webhooks/Stirpe');
 const router = express.Router();
 
 router.post('/register', userRegisterValidate, register);
@@ -21,6 +20,6 @@ router.post('/update-profile', tokenChecker, updateProfile);
 router.post('/create-subscription', tokenChecker, createSubscription);
 router.post('/cancel-subscription', tokenChecker, cancelSubscription);
 
-router.post('/webhook', express.raw({ type: 'application/json' }), webHooks);
+// router.post('/webhook', express.raw({ type: 'application/json' }), webHooks);
 
 module.exports = router;
