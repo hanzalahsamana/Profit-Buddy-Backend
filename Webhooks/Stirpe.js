@@ -4,6 +4,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const webHooks = async (req, res) => {
   let event;
+  console.log('🚚🚚👍');
 
   try {
     event = stripe.webhooks.constructEvent(req.body, req.headers['stripe-signature'], process.env.STRIPE_WEBHOOK_SECRET);
@@ -15,6 +16,8 @@ const webHooks = async (req, res) => {
   try {
     switch (event.type) {
       case 'invoice.payment_succeeded': {
+        
+        console.log('🚚🚚', event);
         const subscriptionId = event.data.object.subscription;
 
         const subscription = await SubscriptionModel.findOne({ stripeSubscriptionId: subscriptionId });
