@@ -126,6 +126,7 @@ const cancelSubscription = async (req, res) => {
     if (subscription.subscriptionType === 'coupon') {
       subscription.status = 'canceled';
       subscription.currentPeriodEnd = new Date();
+      await subscription.save();
     } else {
       if (!subscription.stripeSubscriptionId) {
         return res.status(404).json({ success: false, message: 'No subscription found for this user.' });
