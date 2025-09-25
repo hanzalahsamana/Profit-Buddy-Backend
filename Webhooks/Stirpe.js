@@ -32,11 +32,11 @@ const webHooks = async (req, res) => {
           subscription.currentPeriodStart = new Date(item?.period?.start * 1000);
           await subscription.save();
 
-          const user = await UserModal.findById(subscription.userRef);
-          if (user) {
-            user.plan = subscription.planName;
-            await user.save();
-          }
+          // const user = await UserModal.findById(subscription.userRef);
+          // if (user) {
+          //   user.plan = subscription.planName;
+          //   await user.save();
+          // }
         }
         break;
       }
@@ -56,11 +56,11 @@ const webHooks = async (req, res) => {
           subscription.status = 'past_due';
           await subscription.save();
 
-          const user = await UserModal.findById(subscription.userRef);
-          if (user) {
-            user.plan = null; // or keep old plan but mark subscription inactive
-            await user.save();
-          }
+          // const user = await UserModal.findById(subscription.userRef);
+          // if (user) {
+          //   user.plan = null; // or keep old plan but mark subscription inactive
+          //   await user.save();
+          // }
         }
         break;
       }
@@ -76,7 +76,7 @@ const webHooks = async (req, res) => {
 
           const user = await UserModal.findById(subscription.userRef);
           if (user) {
-            user.plan = null;
+            // user.plan = null;
             user.currentSubscription = null;
             user.stripeCustomerId = null; // optional
             await user.save();
@@ -94,11 +94,11 @@ const webHooks = async (req, res) => {
           subscription.status = status;
           await subscription.save();
 
-          const user = await UserModal.findById(subscription.userRef);
-          if (user) {
-            user.plan = status === 'active' ? subscription.planName : null;
-            await user.save();
-          }
+          // const user = await UserModal.findById(subscription.userRef);
+          // if (user) {
+          //   user.plan = status === 'active' ? subscription.planName : null;
+          //   await user.save();
+          // }
         }
         break;
       }

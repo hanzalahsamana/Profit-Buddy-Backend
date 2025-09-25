@@ -44,7 +44,7 @@ const userSchema = new Schema(
     currentSubscription: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription', default: null },
 
     // Stripe
-    stripeCustomerId: { type: String, default: null, select: false },
+    stripeCustomerId: { type: String, default: null, },
 
     // Verifications Token
     verifyToken: { type: String, default: null, select: false },

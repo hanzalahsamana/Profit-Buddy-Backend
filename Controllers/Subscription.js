@@ -22,9 +22,10 @@ const createSubscription = async (req, res) => {
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
     if (user.currentSubscription) {
+      const now = new Date();
       const existingSubDoc = await SubscriptionModel.findById(user.currentSubscription).select('+stripeSubscriptionId');
 
-      if (existingSubDoc?.status === 'active') {
+      if (existingSubDoc?.status === 'active' && (!existingSubDoc.currentPeriodEnd || new Date(existingSubDoc.currentPeriodEnd) >= now)) {
         return res.status(400).json({
           success: false,
           message: 'Please cancel your current subscription first before creating a new one.',
@@ -56,7 +57,6 @@ const createSubscription = async (req, res) => {
       const subscriptionDoc = await SubscriptionModel.findOneAndUpdate({ userRef: user._id }, newSubscriptionData, { new: true, upsert: true });
 
       user.currentSubscription = subscriptionDoc._id;
-      user.plan = coupon.planName || planName;
       await user.save();
 
       return res.json({
@@ -95,7 +95,6 @@ const createSubscription = async (req, res) => {
     const subscriptionDoc = await SubscriptionModel.findOneAndUpdate({ userRef: user._id }, newSubscriptionData, { new: true, upsert: true });
 
     user.currentSubscription = subscriptionDoc._id;
-    user.plan = planName;
     await user.save();
 
     res.json({

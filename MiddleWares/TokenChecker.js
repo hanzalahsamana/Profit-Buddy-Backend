@@ -21,7 +21,7 @@ const tokenChecker = async (req, res, next) => {
       return res.status(401).json({ message: 'Token is invalid.' });
     }
 
-    const user = await UserModal.findById(decoded._id);
+    const user = await UserModal.findById(decoded._id).populate('currentSubscription');
 
     if (!user) {
       return res.status(404).json({ message: 'User not found please signup first.' });
