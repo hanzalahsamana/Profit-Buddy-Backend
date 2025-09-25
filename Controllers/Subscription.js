@@ -2,7 +2,13 @@ const { DEFAULT_SUBSCRIPTION_COUPON } = require('../Enums/OurConstant');
 const { PRICE_IDS } = require('../Enums/StripeConstant');
 const { SubscriptionModel } = require('../Models/SubscriptionModel');
 const { UserModal } = require('../Models/UserModel');
-const { createStripeCustomer, createStripeSubscription, attachPaymentMethodToStripeCustomer, cancelStripeSubscription } = require('../Services/Stripe.service');
+const {
+  createStripeCustomer,
+  createStripeSubscription,
+  attachPaymentMethodToStripeCustomer,
+  cancelStripeSubscription,
+  ensureStripeCustomer,
+} = require('../Services/Stripe.service');
 const { getDateAfterMonths } = require('../Utils/Converter');
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -12,18 +18,18 @@ const createSubscription = async (req, res) => {
     const { planName, couponCode } = req.body;
     const { userId } = req.query;
 
-    const user = await UserModal.findById(userId);
+    const user = await UserModal.findById(userId).select('+stripeCustomerId');
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
     // ✅ Check existing subscription (cancel if needed before applying coupon)
-    if (user.currentSubscription) {
-      const existingSubDoc = await SubscriptionModel.findById(user.currentSubscription).select('+stripeSubscriptionId');
-      if (existingSubDoc?.stripeSubscriptionId) {
-        await stripe.subscriptions.update(existingSubDoc.stripeSubscriptionId, { cancel_at_period_end: true });
-        existingSubDoc.status = 'canceled';
-        await existingSubDoc.save();
-      }
-    }
+    // if (user.currentSubscription) {
+    //   const existingSubDoc = await SubscriptionModel.findById(user.currentSubscription).select('+stripeSubscriptionId');
+    //   if (existingSubDoc?.stripeSubscriptionId) {
+    //     await stripe.subscriptions.update(existingSubDoc.stripeSubscriptionId, { cancel_at_period_end: true });
+    //     existingSubDoc.status = 'canceled';
+    //     await existingSubDoc.save();
+    //   }
+    // }
 
     // ✅ Coupon Flow
     if (couponCode) {
@@ -64,12 +70,7 @@ const createSubscription = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid plan selected' });
     }
 
-    const customerId = user.stripeCustomerId || (await createStripeCustomer({ email: user.email }))?.id;
-
-    if (!user.stripeCustomerId) {
-      user.stripeCustomerId = customerId;
-      await user.save();
-    }
+    const customerId = await ensureStripeCustomer(user);
 
     const { subscription, clientSecret, summary } = await createStripeSubscription(customerId, PRICE_IDS[planName]);
 
@@ -104,7 +105,7 @@ const createSubscription = async (req, res) => {
       summary: summary,
     });
   } catch (err) {
-    console.error('Stripe subscription error:', err);
+    console.error('Stripe subscription error:', err?.message);
     res.status(400).json({ success: false, message: err.message });
   }
 };

@@ -17,17 +17,22 @@ const webHooks = async (req, res) => {
   try {
     switch (event.type) {
       case 'invoice.payment_succeeded': {
-        
-        const subscriptionId = event.data.object.subscription;
+        const subscriptionId =
+          invoice.subscription || // normal location
+          invoice.parent?.subscription_details?.subscription || // fallback
+          invoice.lines?.data?.[0]?.parent?.subscription_item_details?.subscription;
+        if (!subscriptionId) {
+          console.warn('⚠️ No subscription ID found for paid invoice:', invoice.id);
+          break;
+        }
 
         const subscription = await SubscriptionModel.findOne({ stripeSubscriptionId: subscriptionId });
         if (subscription) {
           subscription.status = 'active';
-          subscription.currentPeriodEnd = new Date(event.data.object.current_period_end * 1000);
-          subscription.currentPeriodStart = new Date(event.data.object.current_period_start * 1000);
+          subscription.currentPeriodEnd = new Date(event.data.object.period_end * 1000);
+          subscription.currentPeriodStart = new Date(event.data.object.period_start * 1000);
           await subscription.save();
 
-          // Update user's plan/status
           const user = await UserModal.findById(subscription.userRef);
           if (user) {
             user.plan = subscription.planName;
@@ -38,7 +43,14 @@ const webHooks = async (req, res) => {
       }
 
       case 'invoice.payment_failed': {
-        const subscriptionId = event.data.object.subscription;
+        const subscriptionId =
+          invoice.subscription || // normal location
+          invoice.parent?.subscription_details?.subscription || // fallback
+          invoice.lines?.data?.[0]?.parent?.subscription_item_details?.subscription;
+        if (!subscriptionId) {
+          console.warn('⚠️ No subscription ID found for paid invoice:', invoice.id);
+          break;
+        }
 
         const subscription = await SubscriptionModel.findOne({ stripeSubscriptionId: subscriptionId });
         if (subscription) {

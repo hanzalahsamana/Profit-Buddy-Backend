@@ -19,8 +19,8 @@ const subscriptionSchema = new Schema(
     },
     currentPeriodStart: { type: Date },
     currentPeriodEnd: { type: Date },
-    stripeCustomerId: { type: String, default: null, select: false },
-    stripeSubscriptionId: { type: String, default: null, select: false },
+    stripeCustomerId: { type: String, default: null, },
+    stripeSubscriptionId: { type: String, default: null,},
 
     userRef: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
   },

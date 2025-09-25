@@ -76,4 +76,32 @@ const attachPaymentMethodToStripeCustomer = async (customerId, paymentMethodId) 
   return paymentMethodId;
 };
 
-module.exports = { createStripeSubscription, getStripeSubscription, cancelStripeSubscription, createStripeCustomer, attachPaymentMethodToStripeCustomer };
+
+async function ensureStripeCustomer(user) {
+  let customerId = user.stripeCustomerId;
+
+  if (customerId) {
+    try {
+      const customer = await stripe.customers.retrieve(customerId);
+      if (customer.deleted) {
+        customerId = null;
+      }
+    } catch (error) {
+      if (error.type === 'StripeInvalidRequestError' && error.code === 'resource_missing') {
+        customerId = null;
+      } else {
+        throw error;
+      }
+    }
+  }
+  if (!customerId) {
+    const newCustomer = await createStripeCustomer({ email: user.email });
+    customerId = newCustomer.id;
+    user.stripeCustomerId = customerId;
+    await user.save();
+  }
+
+  return customerId;
+}
+
+module.exports = { createStripeSubscription, getStripeSubscription, cancelStripeSubscription, createStripeCustomer, attachPaymentMethodToStripeCustomer, ensureStripeCustomer };
