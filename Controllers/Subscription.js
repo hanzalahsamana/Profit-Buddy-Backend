@@ -21,17 +21,17 @@ const createSubscription = async (req, res) => {
     const user = await UserModal.findById(userId).select('+stripeCustomerId');
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
-    // ✅ Check existing subscription (cancel if needed before applying coupon)
-    // if (user.currentSubscription) {
-    //   const existingSubDoc = await SubscriptionModel.findById(user.currentSubscription).select('+stripeSubscriptionId');
-    //   if (existingSubDoc?.stripeSubscriptionId) {
-    //     await stripe.subscriptions.update(existingSubDoc.stripeSubscriptionId, { cancel_at_period_end: true });
-    //     existingSubDoc.status = 'canceled';
-    //     await existingSubDoc.save();
-    //   }
-    // }
+    if (user.currentSubscription) {
+      const existingSubDoc = await SubscriptionModel.findById(user.currentSubscription).select('+stripeSubscriptionId');
 
-    // ✅ Coupon Flow
+      if (existingSubDoc?.status === 'active') {
+        return res.status(400).json({
+          success: false,
+          message: 'Please cancel your current subscription first before creating a new one.',
+        });
+      }
+    }
+
     if (couponCode) {
       const coupon = DEFAULT_SUBSCRIPTION_COUPON?.[couponCode] || null;
       if (!coupon) {
