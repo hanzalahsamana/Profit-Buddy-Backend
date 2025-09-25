@@ -81,7 +81,6 @@ const webHooks = async (req, res) => {
         const subscription = await SubscriptionModel.findOne({ stripeSubscriptionId: subscriptionId });
         if (subscription) {
           subscription.status = status;
-          subscription.currentPeriodEnd = new Date(event.data.object.current_period_end * 1000);
           await subscription.save();
 
           const user = await UserModal.findById(subscription.userRef);
