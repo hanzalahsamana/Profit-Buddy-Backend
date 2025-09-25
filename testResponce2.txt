@@ -1,6 +1,4 @@
-
-🚚🚚👍
-🚚🚚 {
+{
   id: 'evt_1SB9BiQ2jkTuccFD7EWLnU8o',
   object: 'event',
   api_version: '2025-08-27.basil',
