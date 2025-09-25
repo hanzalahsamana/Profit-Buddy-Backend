@@ -1,70 +1,150 @@
 {
-  id: 'evt_1SB9BiQ2jkTuccFD7EWLnU8o',
-  object: 'event',
-  api_version: '2025-08-27.basil',
-  created: 1758783718,
-  data: {
-    object: {
-      id: 'sub_1SB9BgQ2jkTuccFDEF43ru9R',
-      object: 'subscription',
-      application: null,
-      application_fee_percent: null,
-      automatic_tax: [Object],
-      billing_cycle_anchor: 1758783716,
-      billing_cycle_anchor_config: null,
-      billing_mode: [Object],
-      billing_thresholds: null,
-      cancel_at: 1761375716,
-      cancel_at_period_end: true,
-      canceled_at: 1758783718,
-      cancellation_details: [Object],
-      collection_method: 'charge_automatically',
-      created: 1758783716,
-      currency: 'usd',
-      customer: 'cus_T7NxhuNrVO1pWE',
-      days_until_due: null,
-      default_payment_method: null,
-      default_source: null,
-      default_tax_rates: [],
-      description: null,
-      discounts: [],
-      ended_at: null,
-      invoice_settings: [Object],
-      items: [Object],
-      latest_invoice: 'in_1SB9BgQ2jkTuccFDFWJcX9iN',
-      livemode: false,
-      metadata: {},
-      next_pending_invoice_item_invoice: null,
-      on_behalf_of: null,
-      pause_collection: null,
-      payment_settings: [Object],
-      pending_invoice_item_interval: null,
-      pending_setup_intent: null,
-      pending_update: null,
-      plan: [Object],
-      quantity: 1,
-      schedule: null,
-      start_date: 1758783716,
-      status: 'incomplete',
-      test_clock: null,
-      transfer_data: null,
-      trial_end: null,
-      trial_settings: [Object],
-      trial_start: null
+  "object": {
+    "id": "in_1SBBXvQ2jkTuccFDCdMb7W2e",
+    "object": "invoice",
+    "account_country": "US",
+    "account_name": "Profit Buddy  sandbox",
+    "account_tax_ids": null,
+    "amount_due": 4999,
+    "amount_overpaid": 0,
+    "amount_paid": 4999,
+    "amount_remaining": 0,
+    "amount_shipping": 0,
+    "application": null,
+    "attempt_count": 1,
+    "attempted": true,
+    "auto_advance": false,
+    "automatic_tax": {
+      "disabled_reason": null,
+      "enabled": false,
+      "liability": null,
+      "provider": null,
+      "status": null
     },
-    previous_attributes: {
-      cancel_at: null,
-      cancel_at_period_end: false,
-      canceled_at: null,
-      cancellation_details: [Object]
-    }
+    "automatically_finalizes_at": null,
+    "billing_reason": "subscription_create",
+    "collection_method": "charge_automatically",
+    "created": 1758792783,
+    "currency": "usd",
+    "custom_fields": null,
+    "customer": "cus_T7PwWDKy4IxMZN",
+    "customer_address": null,
+    "customer_email": "junaidhunani890@gmail.com",
+    "customer_name": "ali",
+    "customer_phone": null,
+    "customer_shipping": null,
+    "customer_tax_exempt": "none",
+    "customer_tax_ids": [],
+    "default_payment_method": null,
+    "default_source": null,
+    "default_tax_rates": [],
+    "description": null,
+    "discounts": [],
+    "due_date": null,
+    "effective_at": 1758792783,
+    "ending_balance": 0,
+    "footer": null,
+    "from_invoice": null,
+    "hosted_invoice_url": "https://invoice.stripe.com/i/acct_1S7tq5Q2jkTuccFD/test_YWNjdF8xUzd0cTVRMmprVHVjY0ZELF9UN1FPbE5ib2tVek9tcEJvWTY4REFOcTNkZUpDeG9zLDE0OTMzMzYwMA0200bmEzNM2T?s=ap",
+    "invoice_pdf": "https://pay.stripe.com/invoice/acct_1S7tq5Q2jkTuccFD/test_YWNjdF8xUzd0cTVRMmprVHVjY0ZELF9UN1FPbE5ib2tVek9tcEJvWTY4REFOcTNkZUpDeG9zLDE0OTMzMzYwMA0200bmEzNM2T/pdf?s=ap",
+    "issuer": {
+      "type": "self"
+    },
+    "last_finalization_error": null,
+    "latest_revision": null,
+    "lines": {
+      "object": "list",
+      "data": [
+        {
+          "id": "il_1SBBXvQ2jkTuccFDqx3ltFU6",
+          "object": "line_item",
+          "amount": 4999,
+          "currency": "usd",
+          "description": "1 × Business Plan Month (at $49.99 / month)",
+          "discount_amounts": [],
+          "discountable": true,
+          "discounts": [],
+          "invoice": "in_1SBBXvQ2jkTuccFDCdMb7W2e",
+          "livemode": false,
+          "metadata": {},
+          "parent": {
+            "invoice_item_details": null,
+            "subscription_item_details": {
+              "invoice_item": null,
+              "proration": false,
+              "proration_details": {
+                "credited_items": null
+              },
+              "subscription": "sub_1SBBXvQ2jkTuccFDLal6vqyI",
+              "subscription_item": "si_T7QOD6z3XE4lyQ"
+            },
+            "type": "subscription_item_details"
+          },
+          "period": {
+            "end": 1761384783,
+            "start": 1758792783
+          },
+          "pretax_credit_amounts": [],
+          "pricing": {
+            "price_details": {
+              "price": "price_1S7tu6Q2jkTuccFDPE9f4OOJ",
+              "product": "prod_T41yQS1En12xtf"
+            },
+            "type": "price_details",
+            "unit_amount_decimal": "4999"
+          },
+          "quantity": 1,
+          "taxes": []
+        }
+      ],
+      "has_more": false,
+      "total_count": 1,
+      "url": "/v1/invoices/in_1SBBXvQ2jkTuccFDCdMb7W2e/lines"
+    },
+    "livemode": false,
+    "metadata": {},
+    "next_payment_attempt": null,
+    "number": "0BM2KPPI-0014",
+    "on_behalf_of": null,
+    "parent": {
+      "quote_details": null,
+      "subscription_details": {
+        "metadata": {},
+        "subscription": "sub_1SBBXvQ2jkTuccFDLal6vqyI"
+      },
+      "type": "subscription_details"
+    },
+    "payment_settings": {
+      "default_mandate": null,
+      "payment_method_options": null,
+      "payment_method_types": null
+    },
+    "period_end": 1758792783,
+    "period_start": 1758792783,
+    "post_payment_credit_notes_amount": 0,
+    "pre_payment_credit_notes_amount": 0,
+    "receipt_number": null,
+    "rendering": null,
+    "shipping_cost": null,
+    "shipping_details": null,
+    "starting_balance": 0,
+    "statement_descriptor": null,
+    "status": "paid",
+    "status_transitions": {
+      "finalized_at": 1758792783,
+      "marked_uncollectible_at": null,
+      "paid_at": 1758792798,
+      "voided_at": null
+    },
+    "subtotal": 4999,
+    "subtotal_excluding_tax": 4999,
+    "test_clock": null,
+    "total": 4999,
+    "total_discount_amounts": [],
+    "total_excluding_tax": 4999,
+    "total_pretax_credit_amounts": [],
+    "total_taxes": [],
+    "webhooks_delivered_at": 1758792785
   },
-  livemode: false,
-  pending_webhooks: 1,
-  request: {
-    id: 'req_ngkTYv0KIceVxF',
-    idempotency_key: 'stripe-node-retry-7bca500e-840e-4b90-b0b6-6de63b9289d3'
-  },
-  type: 'customer.subscription.updated'
+  "previous_attributes": null
 }
-Error handling webhook event: Subscription validation failed: currentPeriodEnd: Cast to date failed for value "Invalid Date" (type Date) at path "currentPeriodEnd"

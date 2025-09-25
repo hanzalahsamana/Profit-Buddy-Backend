@@ -16,12 +16,10 @@ const webHooks = async (req, res) => {
   console.log('🚚🚚', event);
   try {
     const invoice = event.data.object;
+    const item = invoice.lines.data[0];
     switch (event.type) {
       case 'invoice.payment_succeeded': {
-        const subscriptionId =
-          invoice.subscription || // normal location
-          invoice.parent?.subscription_details?.subscription || // fallback
-          invoice.lines?.data?.[0]?.parent?.subscription_item_details?.subscription;
+        const subscriptionId = invoice.subscription || invoice.parent?.subscription_details?.subscription || item?.parent?.subscription_item_details?.subscription;
         if (!subscriptionId) {
           console.warn('⚠️ No subscription ID found for paid invoice:', invoice.id);
           break;
@@ -30,8 +28,8 @@ const webHooks = async (req, res) => {
         const subscription = await SubscriptionModel.findOne({ stripeSubscriptionId: subscriptionId });
         if (subscription) {
           subscription.status = 'active';
-          subscription.currentPeriodEnd = new Date(event.data.object.period_end * 1000);
-          subscription.currentPeriodStart = new Date(event.data.object.period_start * 1000);
+          subscription.currentPeriodEnd = new Date(item?.period?.end * 1000);
+          subscription.currentPeriodStart = new Date(item?.period?.start * 1000);
           await subscription.save();
 
           const user = await UserModal.findById(subscription.userRef);

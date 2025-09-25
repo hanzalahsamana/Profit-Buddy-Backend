@@ -9,7 +9,7 @@ const subscriptionSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['incomplete', 'active', 'canceled', 'past_due', 'unpaid'],
+      enum: ['incomplete', 'incomplete_payment', 'active', 'canceled', 'past_due', 'unpaid'],
       default: 'incomplete',
     },
     subscriptionType: {
@@ -19,8 +19,8 @@ const subscriptionSchema = new Schema(
     },
     currentPeriodStart: { type: Date },
     currentPeriodEnd: { type: Date },
-    stripeCustomerId: { type: String, default: null, },
-    stripeSubscriptionId: { type: String, default: null,},
+    stripeCustomerId: { type: String, default: null },
+    stripeSubscriptionId: { type: String, default: null },
 
     userRef: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
   },
