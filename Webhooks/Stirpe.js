@@ -15,6 +15,7 @@ const webHooks = async (req, res) => {
 
   console.log('🚚🚚', event);
   try {
+    const invoice = event.data.object;
     switch (event.type) {
       case 'invoice.payment_succeeded': {
         const subscriptionId =
