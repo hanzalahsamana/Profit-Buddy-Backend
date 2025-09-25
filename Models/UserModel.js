@@ -37,6 +37,10 @@ const userSchema = new Schema(
       required: false,
     },
 
+    quotasUsed: {
+      aiChat: { type: Number, default: 0 },
+    },
+
     currentSubscription: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription', default: null },
 
     // Stripe

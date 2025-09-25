@@ -21,6 +21,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
+connectDB();
 app.post('/api/v1/post/webhook', express.raw({ type: 'application/json' }), webHooks);
 
 app.use(bodyParser.json());
@@ -28,7 +29,6 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
   res.send('Server online and ready for lift-off!');
 });
-connectDB();
 app.use('/api/v1', mainRouter);
 
 if (process.env.NODE_ENV !== 'production') {

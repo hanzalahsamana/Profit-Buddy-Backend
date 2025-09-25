@@ -1,8 +1,10 @@
 // chatController.js
 const OpenAI = require('openai');
+const { PLAN_QUOTAS } = require('../Enums/OurConstant');
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const aiChat = async (req, res) => {
+  const user = req.user;
   const message = req.query.message || 'Hello!';
 
   // SSE headers
@@ -27,6 +29,11 @@ const aiChat = async (req, res) => {
       // Optional: detect end
       const finishReason = event.choices?.[0]?.finish_reason;
       if (finishReason === 'stop') {
+        user.quotasUsed.aiChat = (user.quotasUsed.aiChat || 0) + 1;
+        await user.save();
+
+        res.write(`data: QUOTA:${JSON.stringify({ used: user.quotasUsed.aiChat })}\n\n`);
+
         res.write('data: [DONE]\n\n');
         res.end();
       }
@@ -34,6 +41,7 @@ const aiChat = async (req, res) => {
 
     // Signal end of stream
     res.write('data: [DONE]\n\n');
+
     res.end();
   } catch (err) {
     console.error(err);
