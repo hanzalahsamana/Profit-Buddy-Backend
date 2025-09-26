@@ -148,3 +148,59 @@
   },
   "previous_attributes": null
 }
+
+
+const OpenAI = require('openai');
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+const aiChat = async (req, res) => {
+  const user = req.user;
+  const message = req.query.message || 'Hello!';
+
+  // SSE headers
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  try {
+    const stream = await openai.responses.stream({
+      model: 'gpt-5', // or your trained model
+      input: message,
+      prompt: {
+        id: 'pmpt_68d69c2fe0c48190849ed5476334b2390b61bafdc42b0cf6',
+        version: '2',
+      },
+    });
+
+    for await (const event of stream) {
+      if (event.type === 'output_text.delta') {
+        const textChunk = event.delta?.content || event.delta;
+        if (textChunk) {
+          res.write(`data: ${textChunk}\n\n`);
+        }
+      }
+
+      if (event.type === 'response.completed') {
+        user.quotasUsed.aiChat = (user.quotasUsed.aiChat || 0) + 1;
+        await user.save();
+
+        res.write(`data: QUOTA:${JSON.stringify({ used: user.quotasUsed.aiChat })}\n\n`);
+        res.write('data: [DONE]\n\n');
+        res.end();
+      }
+
+      if (event.type === 'response.error') {
+        res.write(`data: ERROR: ${event.error?.message || 'Unknown error'}\n\n`);
+        res.write('data: [DONE]\n\n');
+        res.end();
+      }
+    }
+  } catch (err) {
+    console.error('AI Chat error:', err);
+    res.write(`data: ERROR: ${err.message}\n\n`);
+    res.write('data: [DONE]\n\n');
+    res.end();
+  }
+};
+
+module.exports = { aiChat };

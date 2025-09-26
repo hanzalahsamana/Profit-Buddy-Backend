@@ -15,14 +15,13 @@ async function connectDB() {
         connectTimeoutMS: 35000,
         socketTimeoutMS: 50000,
         serverSelectionTimeoutMS: 25000,
-        bufferCommands: true, // optional, Mongoose default is true
+        bufferCommands: true,
       })
       .then((mongoose) => {
-        // console.log('✅ MongoDB connected');
+        console.log('✅ MongoDB connected');
         return mongoose;
       })
       .catch((err) => {
-        // console.error('MongoDB connection error:', err);
         throw err;
       });
   }

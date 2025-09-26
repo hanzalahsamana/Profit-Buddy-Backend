@@ -1,5 +1,5 @@
-const { DEFAULT_SUBSCRIPTION_COUPON } = require('../Enums/OurConstant');
 const { PRICE_IDS } = require('../Enums/StripeConstant');
+const { CouponModel } = require('../Models/CouponModel');
 const { SubscriptionModel } = require('../Models/SubscriptionModel');
 const { UserModal } = require('../Models/UserModel');
 const {
@@ -34,7 +34,8 @@ const createSubscription = async (req, res) => {
     }
 
     if (couponCode) {
-      const coupon = DEFAULT_SUBSCRIPTION_COUPON?.[couponCode] || null;
+      const coupon = await CouponModel.findOne({ name: couponCode });
+
       if (!coupon) {
         return res.status(400).json({
           success: false,
@@ -42,8 +43,15 @@ const createSubscription = async (req, res) => {
         });
       }
 
+      if (coupon.used) {
+        return res.status(400).json({
+          success: false,
+          message: 'This coupon code has already been used.',
+        });
+      }
+
       const startDate = new Date();
-      const endDate = getDateAfterMonths(coupon?.durationMonths || 1);
+      const endDate = getDateAfterMonths(coupon.durationMonths || 1);
 
       const newSubscriptionData = {
         planName: coupon.planName || planName,
@@ -55,6 +63,10 @@ const createSubscription = async (req, res) => {
       };
 
       const subscriptionDoc = await SubscriptionModel.findOneAndUpdate({ userRef: user._id }, newSubscriptionData, { new: true, upsert: true });
+
+      coupon.used = true;
+      coupon.userEmail = user.email;
+      await coupon.save();
 
       user.currentSubscription = subscriptionDoc._id;
       await user.save();

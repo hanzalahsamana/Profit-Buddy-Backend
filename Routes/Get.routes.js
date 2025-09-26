@@ -9,6 +9,7 @@ const tokenChecker = require('../MiddleWares/TokenChecker');
 const { getHistoryData } = require('../Controllers/History');
 const { aiChat } = require('../Controllers/AIChat');
 const { checkAiQuota } = require('../MiddleWares/CheckQuotas');
+const { getCoupons } = require('../Controllers/Admin/Coupon');
 
 router.get('/products', tokenChecker, getProducts);
 router.get('/search-product', tokenChecker, searchProducts);
@@ -21,5 +22,6 @@ router.get('/calculate-seller-revenue', tokenChecker, calculateSellerRevenue);
 router.get('/user-detail', tokenChecker, getUserDetail);
 router.get('/history', tokenChecker, getHistoryData);
 router.get('/ai-chat', tokenChecker, checkAiQuota, aiChat);
+router.get('/coupons', tokenChecker, getCoupons);
 
 module.exports = router;

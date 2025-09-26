@@ -294,7 +294,6 @@ const enrichHistoryDataInProducts = async (products, userId) => {
     asin: { $in: asins },
   }).lean();
 
-  console.log(asins, ['d']);
 
   const historyMap = Object.fromEntries(userHistories.map((h) => [h.asin, h]));
 

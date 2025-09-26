@@ -31,6 +31,10 @@ const userSchema = new Schema(
       default: false,
       required: true,
     },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
     plan: {
       type: String,
       default: null,
@@ -44,7 +48,7 @@ const userSchema = new Schema(
     currentSubscription: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription', default: null },
 
     // Stripe
-    stripeCustomerId: { type: String, default: null, },
+    stripeCustomerId: { type: String, default: null },
 
     // Verifications Token
     verifyToken: { type: String, default: null, select: false },

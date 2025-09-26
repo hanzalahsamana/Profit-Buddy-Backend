@@ -4,8 +4,6 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const webHooks = async (req, res) => {
   let event;
-  console.log('🚚🚚👍');
-
   try {
     event = stripe.webhooks.constructEvent(req.body, req.headers['stripe-signature'], process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
@@ -15,10 +13,10 @@ const webHooks = async (req, res) => {
 
   console.log('🚚🚚', event);
   try {
-    const invoice = event.data.object;
-    const item = invoice.lines.data[0];
     switch (event.type) {
       case 'invoice.payment_succeeded': {
+        const invoice = event.data.object;
+        const item = invoice.lines.data[0];
         const subscriptionId = invoice.subscription || invoice.parent?.subscription_details?.subscription || item?.parent?.subscription_item_details?.subscription;
         if (!subscriptionId) {
           console.warn('⚠️ No subscription ID found for paid invoice:', invoice.id);
@@ -31,21 +29,15 @@ const webHooks = async (req, res) => {
           subscription.currentPeriodEnd = new Date(item?.period?.end * 1000);
           subscription.currentPeriodStart = new Date(item?.period?.start * 1000);
           await subscription.save();
-
-          // const user = await UserModal.findById(subscription.userRef);
-          // if (user) {
-          //   user.plan = subscription.planName;
-          //   await user.save();
-          // }
         }
         break;
       }
 
       case 'invoice.payment_failed': {
+        const invoice = event.data.object;
+        const item = invoice.lines.data[0];
         const subscriptionId =
-          invoice.subscription || // normal location
-          invoice.parent?.subscription_details?.subscription || // fallback
-          invoice.lines?.data?.[0]?.parent?.subscription_item_details?.subscription;
+          invoice.subscription || invoice.parent?.subscription_details?.subscription || invoice.lines?.data?.[0]?.parent?.subscription_item_details?.subscription;
         if (!subscriptionId) {
           console.warn('⚠️ No subscription ID found for paid invoice:', invoice.id);
           break;
@@ -55,12 +47,6 @@ const webHooks = async (req, res) => {
         if (subscription) {
           subscription.status = 'past_due';
           await subscription.save();
-
-          // const user = await UserModal.findById(subscription.userRef);
-          // if (user) {
-          //   user.plan = null; // or keep old plan but mark subscription inactive
-          //   await user.save();
-          // }
         }
         break;
       }
@@ -76,9 +62,8 @@ const webHooks = async (req, res) => {
 
           const user = await UserModal.findById(subscription.userRef);
           if (user) {
-            // user.plan = null;
             user.currentSubscription = null;
-            user.stripeCustomerId = null; // optional
+            user.stripeCustomerId = null;
             await user.save();
           }
         }
@@ -88,18 +73,13 @@ const webHooks = async (req, res) => {
       case 'customer.subscription.updated': {
         const subscriptionId = event.data.object.id;
         const status = event.data.object.status;
-
         const subscription = await SubscriptionModel.findOne({ stripeSubscriptionId: subscriptionId });
+
         if (subscription) {
           subscription.status = status;
           await subscription.save();
-
-          // const user = await UserModal.findById(subscription.userRef);
-          // if (user) {
-          //   user.plan = status === 'active' ? subscription.planName : null;
-          //   await user.save();
-          // }
         }
+
         break;
       }
 

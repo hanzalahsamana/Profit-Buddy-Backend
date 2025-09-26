@@ -84,7 +84,6 @@ const register = async (req, res) => {
 const verifyEmail = async (req, res) => {
   try {
     const { token } = req.body || {};
-    console.log(req.body);
 
     if (!token) {
       return res.status(400).json({
@@ -402,7 +401,6 @@ const resetPassword = async (req, res) => {
 };
 
 const updateProfile = async (req, res) => {
-  console.log('wdicbsihd');
 
   try {
     const { userId } = req.query;

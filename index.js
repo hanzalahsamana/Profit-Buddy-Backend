@@ -5,7 +5,6 @@ const cors = require('cors');
 const mainRouter = require('./Routes/Routes.js');
 const connectDB = require('./Configurations/Database.js');
 const { webHooks } = require('./Webhooks/Stirpe.js');
-// require('./Configurations/Database.js');
 
 const app = express();
 
@@ -33,8 +32,6 @@ app.use('/api/v1', mainRouter);
 (async () => {
   try {
     await connectDB();
-    console.log('✅ MongoDB connected');
-
     if (process.env.NODE_ENV !== 'production') {
       const PORT = process.env.PORT || 2000;
       app.listen(PORT, () => {
