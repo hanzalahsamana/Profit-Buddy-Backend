@@ -21,7 +21,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
-connectDB();
 app.post('/api/v1/post/webhook', express.raw({ type: 'application/json' }), webHooks);
 
 app.use(bodyParser.json());
@@ -31,11 +30,21 @@ app.get('/', (req, res) => {
 });
 app.use('/api/v1', mainRouter);
 
-if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 2000;
-  app.listen(PORT, () => {
-    console.log(`Server is running on port http://localhost:${PORT}`);
-  });
-}
+(async () => {
+  try {
+    await connectDB();
+    console.log('✅ MongoDB connected');
+
+    if (process.env.NODE_ENV !== 'production') {
+      const PORT = process.env.PORT || 2000;
+      app.listen(PORT, () => {
+        console.log(`🚀 Server is running on http://localhost:${PORT}`);
+      });
+    }
+  } catch (err) {
+    console.error('❌ Failed to connect to DB:', err);
+    process.exit(1);
+  }
+})();
 
 module.exports = app;

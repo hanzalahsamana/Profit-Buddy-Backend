@@ -18,11 +18,11 @@ async function connectDB() {
         bufferCommands: true, // optional, Mongoose default is true
       })
       .then((mongoose) => {
-        console.log('✅ MongoDB connected');
+        // console.log('✅ MongoDB connected');
         return mongoose;
       })
       .catch((err) => {
-        console.error('MongoDB connection error:', err);
+        // console.error('MongoDB connection error:', err);
         throw err;
       });
   }
